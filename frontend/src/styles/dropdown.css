@@ -1,5 +1,144 @@
-
+@import "adaptive.css";
 
 .logo {
     margin: 40px 0 20px 0;
+}
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.menu {
+    list-style: none;
+    padding: 0;
+    margin: 60px 20px auto 20px;
+}
+
+.menu-item {
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.menu-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #052c65;
+    padding: 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.menu-link:hover {
+    background-color: #0d6efd;
+    color: white;
+}
+
+.menu-link .icon {
+    margin-right: 10px;
+}
+
+.dropdown {
+    position: relative;
+}
+
+.dropdown-menu {
+    display: none;
+    list-style: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    border: 1px solid #007bff!important;
+    border-radius: 5px;
+    width: 100%;
+    z-index: 1000;
+    padding: 0!important;
+}
+
+.dropdown-item {
+    font-size: 14px;
+    font-weight: 400;
+    color: #052c65;
+}
+
+.dropdown-menu .dropdown-item {
+    padding: 10px;
+    color: #052c65;
+    text-decoration: none;
+    display: block;
+    transition: background-color 0.3s ease;
+}
+
+.dropdown-menu .dropdown-item:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+.arrow-icon {
+    transition: transform 0.3s ease;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.dropdown-toggle.clicked .arrow-icon {
+    transform: rotate(90deg);
+}
+
+.dropdown-toggle::after {
+    content: none;
+    display: none;
+}
+
+.arrow-icon svg path {
+    fill: #052c65;
+}
+
+.menu-link:hover .arrow-icon svg path,
+.menu-link:hover .icon svg path {
+    fill: white;
+}
+
+.current-balance {
+    font-weight: 500;
+    font-size: 14px;
+    margin: 0 0 20px 30px;
+}
+
+.current-balance a {
+    text-decoration: none;
+}
+
+.user {
+    padding: 20px 0 40px 20px;
+}
+
+.user-name {
+    margin-left: 16px;
+    font-weight: 400;
+    font-size: 14px;
+    color: #052c65;
+}
+
+.menu-items {
+    flex-grow: 1;
+}
+
+.dropdown-toggle::after {
+    display: none!important;
+}
+
+
+.clicked {
+    background-color: #007bff;
+    color: white;
+}
+
+.clicked svg path {
+    fill: white;
+}
+
+#balance {
+    margin-left: 10px;
 }

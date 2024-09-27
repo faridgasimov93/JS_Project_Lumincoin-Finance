@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Главная</title>
-    <link rel="stylesheet" href="src/styles/bootstrap.min.css">
-    <link rel="stylesheet" href="src/styles/styles.css">
+    <title>Доходы</title>
+    <link rel="stylesheet" href="../../styles/styles.css">
+    <link rel="stylesheet" href="../../styles/bootstrap.min.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
@@ -13,7 +13,7 @@
 
     <div class="row">
 
-        <div class="col-2  border-end border-2">
+        <div class="col-2 border-end border-2">
 
             <div class="logo d-flex align-items-center justify-content-center">
                 <i>
@@ -134,54 +134,62 @@
 
         <div class="col-10" id="content-layout">
 
-            <div class="main-page">
+            <div class="income">
+                <h1 class="titles">Доходы</h1>
 
-                <h1 class="titles">Главная</h1>
+                <div class="category-container">
 
-                <div class="date-actions">
-
-                    <div class="datepicker-container">
-                        <button id="todayBtn" class="datepicker-btn active">Сегодня</button>
-                        <button id="weekBtn" class="datepicker-btn">Неделя</button>
-                        <button id="monthBtn" class="datepicker-btn">Месяц</button>
-                        <button id="yearBtn" class="datepicker-btn">Год</button>
-                        <button id="allBtn" class="datepicker-btn">Все</button>
-                        <button id="intervalBtn" class="datepicker-btn">Интервал</button>
-
-                        <div id="dateRangeInputs" class="date-range">
-
-                            <div class="date-selecting"> с</div>
-                            <a href="#" class="flatpickr-custom-styles">Дата</a>
-
-                            <div class="date-selecting"> по</div>
-                            <a href="#" class="flatpickr-custom-styles">Дата</a>
+                    <div class="category-block">
+                        <div class="block-title">Депозиты</div>
+                        <div class="category-actions">
+                            <a href="/income-edit" class="btn-edit">Редактировать</a>
+                            <a href="#" class="btn-delete" data-bs-toggle="modal" data-bs-target="#deleteModal">Удалить</a>
                         </div>
-
                     </div>
+
+                    <div class="category-block">
+                        <div class="block-title">Зарплата</div>
+                        <div class="category-actions">
+                            <a href="/income-edit" class="btn-edit">Редактировать</a>
+                            <a href="#" class="btn-delete" data-bs-toggle="modal" data-bs-target="#deleteModal">Удалить</a>
+                        </div>
+                    </div>
+
+                    <div class="category-block">
+                        <div class="block-title">Сбережения</div>
+                        <div class="category-actions">
+                            <a href="/income-edit" class="btn-edit">Редактировать</a>
+                            <a href="#" class="btn-delete" data-bs-toggle="modal" data-bs-target="#deleteModal">Удалить</a>
+                        </div>
+                    </div>
+
+                    <div class="category-block">
+                        <div class="block-title">Инвестиции</div>
+                        <div class="category-actions">
+                            <a href="/income-edit" class="btn-edit">Редактировать</a>
+                            <a href="#" class="btn-delete" data-bs-toggle="modal" data-bs-target="#deleteModal">Удалить</a>
+                        </div>
+                    </div>
+
+                    <a href="/income-create" class="category-block add-new">+</a>
 
                 </div>
 
-                <div class="main-chart-container">
-
-                    <div class="chart-container">
-                        <div class="chart-title">Доходы</div>
-<!--                        <canvas id="incomeChart"></canvas>-->
-                        <img class="pie-legend" src="src/images/pie-legend.png" alt="pie-legend">
-                        <img src="src/images/piechart.png" alt="piechart">
+                <div class="modal" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header border-0">
+                                <div class="modal-title text-center" id="deleteModalLabel">Вы действительно хотите удалить категорию? Связанные доходы будут удалены навсегда.</div>
+                            </div>
+                            <div class="modal-footer justify-content-center border-0">
+                                <button type="button" class="btn btn-success btn-modal">Да, удалить</button>
+                                <button type="button" class="btn btn-danger btn-modal" data-bs-dismiss="modal">Не удалять</button>
+                            </div>
+                        </div>
                     </div>
-
-                    <div class="chart-divider"></div>
-
-                    <div class="chart-container">
-                        <div class="chart-title">Расходы</div>
-<!--                        <canvas id="expensesChart"></canvas>-->
-                        <img class="pie-legend" src="src/images/pie-legend.png" alt="pie-legend">
-                        <img src="src/images/piechart.png" alt="piechart">
-                    </div>
-
                 </div>
+
             </div>
-
 
         </div>
 
@@ -189,7 +197,7 @@
 
 </div>
 
-<script src="src/components/main.js"></script>
-<script src="src/components/bootstrap.bundle.min.js"></script>
+<script src="../../components/main.js"></script>
+<script src="../../components/bootstrap.bundle.min.js"></script>
 </body>
 </html>
