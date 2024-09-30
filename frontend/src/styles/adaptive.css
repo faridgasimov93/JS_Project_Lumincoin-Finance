@@ -26,12 +26,11 @@
 
 @media screen and (max-width: 768px) {
 
-    .row {
-        justify-content: center!important;
+    .login-form {
+    margin: 0 10px;
     }
 
-    .col-2 {
-        width: 236px;
+    .custom-sidebar {
         position: fixed;
         left: -236px; /* Смещается за экран */
         top: 0;
@@ -44,23 +43,23 @@
 
     .titles {
         text-align: center;
-        margin: 100px 0 40px 0;
+        margin: 100px 10px 40px 10px;
     }
 
     .category-container {
         justify-content: center;
-        margin: 0 0;
+        margin: 0 10px;
+    }
+
+    .category-create-block {
+        margin: 0 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 
     .menu {
         margin-bottom: 100%;
-    }
-
-    .category-create-block {
-        margin-left: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
     }
     .creation-actions {
         text-align: center;
@@ -83,23 +82,15 @@
     .chart-container {
         margin-bottom: 30px;
     }
+    .table-responsive-xl {
+        margin: 0 10px;
+    }
 
 }
 
 @media (min-width: 769px) {
     .menu-toggle {
         display: none!important;
-    }
-}
-
-@media screen and (max-width: 470px) {
-    .btn-edit {
-        width: 110px;
-        font-size: 12px;
-    }
-    .btn-delete {
-        width: 66px;
-        font-size: 12px;
     }
 }
 

@@ -3,17 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <title>Доходы и расходы</title>
-  <link rel="stylesheet" href="../../styles/styles.css">
   <link rel="stylesheet" href="../../styles/bootstrap.min.css">
+  <link rel="stylesheet" href="../../styles/styles.css">
+  <link rel="stylesheet" href="../../styles/adaptive.css">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
 
 <div id="content">
 
-  <div class="row">
+  <div class="d-flex vh-100">
 
-    <div class="col-2 border-end border-2">
+    <div class="flex-shrink-0 d-flex flex-column justify-content-between border-end border-1 custom-sidebar">
 
       <div class="logo d-flex align-items-center justify-content-center">
         <i>
@@ -132,26 +133,26 @@
       </svg>
     </i>
 
-    <div class="col-10" id="content-layout">
+    <div class="flex-grow-1 content-styles" id="content-layout">
 
       <div class="income-and-expenses">
 
         <h1 class="titles">Доходы и расходы</h1>
 
         <div class="creation-actions">
-          <a href="/income-and-expenses-create" class="btn-create btn-create-income">Создать доход</a>
-          <a href="/income-and-expenses-create" class="btn-delete btn-create-expenses">Создать расход</a>
+          <a href="/income-and-expenses-create" class="btn btn-success me-2">Создать доход</a>
+          <a href="/income-and-expenses-create" class="btn btn-danger">Создать расход</a>
         </div>
 
         <div class="date-actions">
 
           <div class="datepicker-container">
-            <button id="todayBtn" class="datepicker-btn active">Сегодня</button>
-            <button id="weekBtn" class="datepicker-btn">Неделя</button>
-            <button id="monthBtn" class="datepicker-btn">Месяц</button>
-            <button id="yearBtn" class="datepicker-btn">Год</button>
-            <button id="allBtn" class="datepicker-btn">Все</button>
-            <button id="intervalBtn" class="datepicker-btn">Интервал</button>
+            <button id="todayBtn" class="btn btn-secondary me-2 mb-2">Сегодня</button>
+            <button id="weekBtn" class="btn btn-outline-secondary me-2 mb-2">Неделя</button>
+            <button id="monthBtn" class="btn btn-outline-secondary me-2 mb-2">Месяц</button>
+            <button id="yearBtn" class="btn btn-outline-secondary me-2 mb-2 ">Год</button>
+            <button id="allBtn" class="btn btn-outline-secondary me-2 mb-2">Все</button>
+            <button id="intervalBtn" class="btn btn-outline-secondary me-2 mb-2">Интервал</button>
 
             <div id="dateRangeInputs" class="date-range">
 

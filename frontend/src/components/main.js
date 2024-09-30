@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
     dropDownMenu();
 });
 document.getElementById('menu-toggle').addEventListener('click', function () {
-    const sidebar = document.querySelector('.col-2');
+    const sidebar = document.querySelector('.custom-sidebar');
     const menuButton = document.querySelector('.menu-toggle');
     sidebar.classList.toggle('show-sidebar');
     menuButton.classList.toggle('show-sidebar');

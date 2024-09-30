@@ -3,19 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <title>Создание расходов</title>
-  <link rel="stylesheet" href="../../styles/styles.css">
   <link rel="stylesheet" href="../../styles/bootstrap.min.css">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../styles/styles.css">
+    <link rel="stylesheet" href="../../styles/adaptive.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
 
 <div id="content">
 
-  <div class="row">
+  <div class="d-flex vh-100">
 
-    <div class="col-2 border-end border-2">
+    <div class="flex-shrink-0 d-flex flex-column justify-content-between border-end border-1 custom-sidebar">
 
-      <div class="logo d-flex align-items-center justify-content-center">
+      <div class="logo border-1 border-bottom d-flex align-items-center justify-content-center">
         <i>
           <svg width="101" height="40" viewBox="0 0 101 40" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M10.6043 32.7143V27.7127H13.9159V28.5845H11.6617V29.7763H13.6961V30.6482H11.6617V32.7143H10.6043ZM23.9373 27.7127V32.7143H22.8798V27.7127H23.9373ZM37.2434 27.7127V32.7143H36.33L34.154 29.5663H34.1174V32.7143H33.0599V27.7127H33.9879L36.1468 30.8582H36.1908V27.7127H37.2434ZM47.2318 32.7143H46.0986L47.8252 27.7127H49.188L50.9122 32.7143H49.779L48.5261 28.8556H48.4871L47.2318 32.7143ZM47.161 30.7483H49.8376V31.5738H47.161V30.7483ZM63.9503 27.7127V32.7143H63.0369L60.8609 29.5663H60.8243V32.7143H59.7668V27.7127H60.6948L62.8537 30.8582H62.8977V27.7127H63.9503ZM77.4896 29.4637H76.4199C76.4004 29.3253 76.3605 29.2024 76.3003 29.0949C76.24 28.9859 76.1627 28.8931 76.0683 28.8165C75.9738 28.74 75.8647 28.6814 75.741 28.6407C75.6189 28.6 75.4862 28.5796 75.3429 28.5796C75.0841 28.5796 74.8586 28.644 74.6664 28.7726C74.4743 28.8996 74.3254 29.0852 74.2195 29.3294C74.1137 29.572 74.0608 29.8667 74.0608 30.2135C74.0608 30.57 74.1137 30.8696 74.2195 31.1122C74.327 31.3548 74.4768 31.5379 74.6689 31.6617C74.861 31.7854 75.0832 31.8473 75.3356 31.8473C75.4772 31.8473 75.6083 31.8286 75.7288 31.7911C75.8509 31.7537 75.9592 31.6991 76.0536 31.6275C76.148 31.5542 76.2262 31.4655 76.2881 31.3613C76.3516 31.2571 76.3955 31.1382 76.4199 31.0047L77.4896 31.0096C77.4619 31.2392 77.3927 31.4606 77.282 31.6739C77.1729 31.8855 77.0256 32.0752 76.84 32.2429C76.656 32.409 76.4362 32.5409 76.1806 32.6386C75.9266 32.7346 75.6392 32.7826 75.3185 32.7826C74.8724 32.7826 74.4735 32.6817 74.1218 32.4798C73.7718 32.2779 73.495 31.9857 73.2915 31.6031C73.0896 31.2205 72.9887 30.7573 72.9887 30.2135C72.9887 29.668 73.0912 29.204 73.2964 28.8214C73.5015 28.4388 73.7799 28.1474 74.1316 27.9471C74.4833 27.7452 74.8789 27.6443 75.3185 27.6443C75.6083 27.6443 75.877 27.685 76.1244 27.7664C76.3735 27.8478 76.5941 27.9667 76.7863 28.123C76.9784 28.2776 77.1347 28.4673 77.2552 28.692C77.3773 28.9167 77.4554 29.1739 77.4896 29.4637ZM86.5005 32.7143V27.7127H89.8708V28.5845H87.558V29.7763H89.6974V30.6482H87.558V31.8424H89.8805V32.7143H86.5005Z"
@@ -25,8 +26,6 @@
           </svg>
         </i>
       </div>
-
-      <div class="border-bottom border-2"></div>
 
       <div class="sidebar">
 
@@ -96,9 +95,7 @@
 
       </div>
 
-      <div class="border-top border-2"></div>
-
-      <div class="dropdown user">
+      <div class="dropdown user border-1 border-top">
         <a href="javascript:void(0)"
            class="d-flex align-items-center link-body-emphasis text-decoration-none dropdown-toggle"
            data-bs-toggle="dropdown" aria-expanded="false">
@@ -132,7 +129,7 @@
       </svg>
     </i>
 
-    <div class="col-10" id="content-layout">
+    <div class="flex-grow-1 content-styles" id="content-layout">
 
         <div class="expenses-create">
             <h1 class="titles">Создания категории расходов</h1>
@@ -143,8 +140,8 @@
 
                 <div class="category-create-actions">
                     <!--на данный момент обе кнопки пока ведут на основную страницу доходов -->
-                    <a href="/expenses" class="btn-create btn-success">Создать</a>
-                    <a href="/expenses" class="btn-cancel">Отмена</a>
+                    <a href="/expenses" class="btn btn-success me-2">Создать</a>
+                    <a href="/expenses" class="btn btn-danger">Отмена</a>
                 </div>
             </div>
         </div>
