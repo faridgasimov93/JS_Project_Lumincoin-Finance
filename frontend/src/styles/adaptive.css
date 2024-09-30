@@ -30,6 +30,7 @@
     margin: 0 10px;
     }
 
+
     .custom-sidebar {
         position: fixed;
         left: -236px; /* Смещается за экран */
@@ -43,12 +44,15 @@
 
     .titles {
         text-align: center;
-        margin: 100px 10px 40px 10px;
+        margin: 0 10px 40px 10px;
+    }
+
+    .content-styles {
+        padding: 100px 20px;
     }
 
     .category-container {
         justify-content: center;
-        margin: 0 10px;
     }
 
     .category-create-block {
