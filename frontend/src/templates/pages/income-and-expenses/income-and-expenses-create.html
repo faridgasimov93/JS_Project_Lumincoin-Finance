@@ -1,0 +1,33 @@
+<div class="income-and-expenses-create">
+
+    <h1 class="titles">Создание дохода/расхода</h1>
+
+    <div class="category-create-block">
+
+        <select class="category-create-input form-control form-select">
+            <option value="1">Доход</option>
+            <option value="2">Расход</option>
+        </select>
+
+        <select class="category-create-input form-control form-select">
+            <option value="2">Зарплата</option>
+            <option value="1">Жильё</option>
+        </select>
+
+        <input class="category-create-input form-control" type="number" placeholder="Сумма в $...">
+
+        <input class="flatpickr flatpickr-input category-create-input form-control" type="text"
+               placeholder="Дата" readonly="readonly"
+               id="income-create-datepicker">
+
+        <input class="category-create-input form-control" type="text" placeholder="Комментарий...">
+
+        <div class="category-create-actions">
+            <a href="/income-and-expenses" class="btn btn-success me-2">Создать</a>
+
+            <a href="/income-and-expenses" class="btn btn-danger">Отмена</a>
+        </div>
+
+    </div>
+
+</div>
