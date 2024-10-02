@@ -87,6 +87,7 @@ export class SignUp {
                     'Content-type': 'application/json',
                     'Accept': 'application/json',
                 },
+                useAuth: false,
                 body: JSON.stringify({
                     name: firstName,
                     lastName: lastName,

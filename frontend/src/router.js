@@ -95,7 +95,7 @@ export class Router {
                 filePathTemplate: '/templates/pages/expenses/expenses.html',
                 useLayout: '/templates/layout.html',
                 load: () => {
-                    new Expenses();
+                    new Expenses(this.openNewRoute.bind(this));
                 }
             },
             {

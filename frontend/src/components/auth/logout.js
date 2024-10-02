@@ -13,7 +13,7 @@ export class Logout {
 
     async logout() {
 
-        await HttpUtils.request('/logout', 'POST', {
+        await HttpUtils.request('/logout', 'POST', false,{
             refreshToken: AuthUtils.getAuthInfo(AuthUtils.refreshTokenKey),
         });
         AuthUtils.deleteAuthInfo();
