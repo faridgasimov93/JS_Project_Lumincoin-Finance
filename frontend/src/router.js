@@ -11,6 +11,7 @@ import {IncomeAndExpenses} from "./components/income-and-expenses/income-and-exp
 import {IncomeAndExpensesCreate} from "./components/income-and-expenses/income-and-expenses-create";
 import {IncomeAndExpensesEdit} from "./components/income-and-expenses/income-and-expenses-edit";
 import {Logout} from "./components/auth/logout";
+import {AuthCheckUtils} from "./ulits/auth-check-utils";
 
 
 export class Router {
@@ -29,7 +30,10 @@ export class Router {
                 filePathTemplate: '/templates/pages/main.html',
                 useLayout: '/templates/layout.html',
                 load: () => {
-                    new Main();
+                    const accessCheck = new AuthCheckUtils(this.openNewRoute.bind(this));
+                    if (accessCheck.checkAndRedirect()) {
+                        new Main();
+                    }
                 }
             },
             {
@@ -68,7 +72,10 @@ export class Router {
                 filePathTemplate: '/templates/pages/income-and-expenses/income-and-expenses.html',
                 useLayout: '/templates/layout.html',
                 load: () => {
-                    new IncomeAndExpenses();
+                    const accessCheck = new AuthCheckUtils(this.openNewRoute.bind(this));
+                    if (accessCheck.checkAndRedirect()) {
+                        new IncomeAndExpenses();
+                    }
                 }
             },
             {
@@ -77,7 +84,10 @@ export class Router {
                 filePathTemplate: '/templates/pages/income-and-expenses/income-and-expenses-create.html',
                 useLayout: '/templates/layout.html',
                 load: () => {
-                    new IncomeAndExpensesCreate();
+                    const accessCheck = new AuthCheckUtils(this.openNewRoute.bind(this));
+                    if (accessCheck.checkAndRedirect()) {
+                        new IncomeAndExpensesCreate();
+                    }
                 }
             },
             {
@@ -86,7 +96,10 @@ export class Router {
                 filePathTemplate: '/templates/pages/income-and-expenses/income-and-expenses-edit.html',
                 useLayout: '/templates/layout.html',
                 load: () => {
-                    new IncomeAndExpensesEdit();
+                    const accessCheck = new AuthCheckUtils(this.openNewRoute.bind(this));
+                    if (accessCheck.checkAndRedirect()) {
+                        new IncomeAndExpensesEdit();
+                    }
                 }
             },
             {
@@ -95,7 +108,10 @@ export class Router {
                 filePathTemplate: '/templates/pages/expenses/expenses.html',
                 useLayout: '/templates/layout.html',
                 load: () => {
-                    new Expenses(this.openNewRoute.bind(this));
+                    const accessCheck = new AuthCheckUtils(this.openNewRoute.bind(this));
+                    if (accessCheck.checkAndRedirect()) {
+                        new Expenses(this.openNewRoute.bind(this));
+                    }
                 }
             },
             {
@@ -104,7 +120,10 @@ export class Router {
                 filePathTemplate: '/templates/pages/expenses/expenses-edit.html',
                 useLayout: '/templates/layout.html',
                 load: () => {
-                    new ExpensesEdit();
+                    const accessCheck = new AuthCheckUtils(this.openNewRoute.bind(this));
+                    if (accessCheck.checkAndRedirect()) {
+                        new ExpensesEdit();
+                    }
                 }
             },
             {
@@ -113,7 +132,10 @@ export class Router {
                 filePathTemplate: '/templates/pages/expenses/expenses-create.html',
                 useLayout: '/templates/layout.html',
                 load: () => {
-                    new ExpensesCreate();
+                    const accessCheck = new AuthCheckUtils(this.openNewRoute.bind(this));
+                    if (accessCheck.checkAndRedirect()) {
+                        new ExpensesCreate();
+                    }
                 }
             },
             {
@@ -122,7 +144,10 @@ export class Router {
                 filePathTemplate: '/templates/pages/income/income.html',
                 useLayout: '/templates/layout.html',
                 load: () => {
-                    new Income();
+                    const accessCheck = new AuthCheckUtils(this.openNewRoute.bind(this));
+                    if (accessCheck.checkAndRedirect()) {
+                        new Income();
+                    }
                 }
             },
             {
@@ -131,7 +156,10 @@ export class Router {
                 filePathTemplate: '/templates/pages/income/income-edit.html',
                 useLayout: '/templates/layout.html',
                 load: () => {
-                    new IncomeEdit();
+                    const accessCheck = new AuthCheckUtils(this.openNewRoute.bind(this));
+                    if (accessCheck.checkAndRedirect()) {
+                        new IncomeEdit();
+                    }
                 }
             },
             {
@@ -140,7 +168,10 @@ export class Router {
                 filePathTemplate: '/templates/pages/income/income-create.html',
                 useLayout: '/templates/layout.html',
                 load: () => {
-                    new IncomeCreate();
+                    const accessCheck = new AuthCheckUtils(this.openNewRoute.bind(this));
+                    if (accessCheck.checkAndRedirect()) {
+                        new IncomeCreate();
+                    }
                 }
             },
         ];
