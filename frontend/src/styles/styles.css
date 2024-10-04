@@ -1,4 +1,3 @@
-@import "dropdown.css";
 
 *,
 *::after,
@@ -35,6 +34,12 @@ html, body {
 .no-account {
     font-size: 12px;
     font-weight: 400;
+}
+
+.common-error {
+    color: var(--bs-form-invalid-color);
+    display: none;
+    font-size: .875em;
 }
 
 .invalid-feedback {
