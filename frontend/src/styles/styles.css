@@ -43,8 +43,11 @@ html, body {
 }
 
 .invalid-feedback {
-    margin-left: 40px;
     display: block !important;
+}
+
+.error-styles {
+    margin-left: 40px;
 }
 
 .button-size {
@@ -255,31 +258,6 @@ button[aria-expanded="true"] .arrow-icon svg {
 .creation-actions {
     margin: 0 60px 40px 0;
 }
-
-/*старые стили кнопок выбора дат*/
-/*.datepicker-btn {*/
-/*    background-color: white;*/
-/*    border: 1px solid #ccc;*/
-/*    width: 100px;*/
-/*    padding: 5px 15px;*/
-/*    margin: 0 20px 20px 0;*/
-/*    border-radius: 5px;*/
-/*    font-weight: 500;*/
-/*    font-size: 0.85rem;*/
-/*    text-align: center;*/
-/*    color: grey;*/
-/*}*/
-
-/*.datepicker-btn.active {*/
-/*    background-color: #6C757D;*/
-/*    color: white;*/
-/*}*/
-
-
-/*.hidden {*/
-/*    !*стиль для дата пикера*!*/
-/*    display: none;*/
-/*}*/
 
 .date-selecting {
     margin: 0 10px;

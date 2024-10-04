@@ -122,7 +122,7 @@ export class Router {
                 load: () => {
                     const accessCheck = new AuthCheckUtils(this.openNewRoute.bind(this));
                     if (accessCheck.checkAndRedirect()) {
-                        new ExpensesEdit();
+                        new ExpensesEdit(this.openNewRoute.bind(this));
                     }
                 }
             },
@@ -134,7 +134,7 @@ export class Router {
                 load: () => {
                     const accessCheck = new AuthCheckUtils(this.openNewRoute.bind(this));
                     if (accessCheck.checkAndRedirect()) {
-                        new ExpensesCreate();
+                        new ExpensesCreate(this.openNewRoute.bind(this));
                     }
                 }
             },
@@ -146,7 +146,7 @@ export class Router {
                 load: () => {
                     const accessCheck = new AuthCheckUtils(this.openNewRoute.bind(this));
                     if (accessCheck.checkAndRedirect()) {
-                        new Income();
+                        new Income(this.openNewRoute.bind(this));
                     }
                 }
             },
@@ -158,7 +158,7 @@ export class Router {
                 load: () => {
                     const accessCheck = new AuthCheckUtils(this.openNewRoute.bind(this));
                     if (accessCheck.checkAndRedirect()) {
-                        new IncomeEdit();
+                        new IncomeEdit(this.openNewRoute.bind(this));
                     }
                 }
             },
@@ -170,7 +170,7 @@ export class Router {
                 load: () => {
                     const accessCheck = new AuthCheckUtils(this.openNewRoute.bind(this));
                     if (accessCheck.checkAndRedirect()) {
-                        new IncomeCreate();
+                        new IncomeCreate(this.openNewRoute.bind(this));
                     }
                 }
             },

@@ -2,89 +2,17 @@
 
     <h1 class="titles">Расходы</h1>
 
-    <div class="category-container d-flex flex-wrap gap-3">
+    <div class="category-container d-flex flex-wrap gap-3" id="category-container">
 
-        <div class="category-block">
-            <div class="block-title">Еда</div>
-            <div class="category-actions">
-                <a href="/expenses-edit" class="btn btn-primary me-2">Редактировать</a>
-                <a href="#" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">Удалить</a>
-            </div>
-        </div>
+<!--        <div class="category-block">-->
+<!--            <div class="block-title">Еда</div>-->
+<!--            <div class="category-actions">-->
+<!--                <a href="/expenses-edit" class="btn btn-primary me-2">Редактировать</a>-->
+<!--                <a href="#" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">Удалить</a>-->
+<!--            </div>-->
+<!--        </div>-->
 
-        <div class="category-block">
-            <div class="block-title">Жилье</div>
-            <div class="category-actions">
-                <a href="/expenses-edit" class="btn btn-primary me-2">Редактировать</a>
-                <a href="#" class="btn btn-danger" data-bs-toggle="modal"
-                   data-bs-target="#deleteModal">Удалить</a>
-            </div>
-        </div>
-
-        <div class="category-block">
-            <div class="block-title">Здоровье</div>
-            <div class="category-actions">
-                <a href="/expenses-edit" class="btn btn-primary me-2">Редактировать</a>
-                <a href="#" class="btn btn-danger" data-bs-toggle="modal"
-                   data-bs-target="#deleteModal">Удалить</a>
-            </div>
-        </div>
-
-        <div class="category-block">
-            <div class="block-title">Кафе</div>
-            <div class="category-actions">
-                <a href="/expenses-edit" class="btn btn-primary me-2">Редактировать</a>
-                <a href="#" class="btn btn-danger" data-bs-toggle="modal"
-                   data-bs-target="#deleteModal">Удалить</a>
-            </div>
-        </div>
-
-        <div class="category-block">
-            <div class="block-title">Авто</div>
-            <div class="category-actions">
-                <a href="/expenses-edit" class="btn btn-primary me-2">Редактировать</a>
-                <a href="#" class="btn btn-danger" data-bs-toggle="modal"
-                   data-bs-target="#deleteModal">Удалить</a>
-            </div>
-        </div>
-
-        <div class="category-block">
-            <div class="block-title">Одежда</div>
-            <div class="category-actions">
-                <a href="/expenses-edit" class="btn btn-primary me-2">Редактировать</a>
-                <a href="#" class="btn btn-danger" data-bs-toggle="modal"
-                   data-bs-target="#deleteModal">Удалить</a>
-            </div>
-        </div>
-
-        <div class="category-block">
-            <div class="block-title">Развлечения</div>
-            <div class="category-actions">
-                <a href="/expenses-edit" class="btn btn-primary me-2">Редактировать</a>
-                <a href="#" class="btn btn-danger" data-bs-toggle="modal"
-                   data-bs-target="#deleteModal">Удалить</a>
-            </div>
-        </div>
-
-        <div class="category-block">
-            <div class="block-title">Счета</div>
-            <div class="category-actions">
-                <a href="/expenses-edit" class="btn btn-primary me-2">Редактировать</a>
-                <a href="#" class="btn btn-danger" data-bs-toggle="modal"
-                   data-bs-target="#deleteModal">Удалить</a>
-            </div>
-        </div>
-
-        <div class="category-block">
-            <div class="block-title">Спорт</div>
-            <div class="category-actions">
-                <a href="/expenses-edit" class="btn btn-primary me-2">Редактировать</a>
-                <a href="#" class="btn btn-danger" data-bs-toggle="modal"
-                   data-bs-target="#deleteModal">Удалить</a>
-            </div>
-        </div>
-
-        <a href="/expenses-create" class="category-block add-new d-flex align-items-center justify-content-center">+</a>
+        <a href="/expenses-create" class="category-block add-new d-flex align-items-center justify-content-center" id="addNew">+</a>
 
     </div>
 
@@ -97,10 +25,8 @@
                     </div>
                 </div>
                 <div class="modal-footer justify-content-center border-0">
-                    <button type="button" class="btn btn-success btn-modal">Да, удалить</button>
-                    <button type="button" class="btn btn-danger btn-modal" data-bs-dismiss="modal">Не
-                        удалять
-                    </button>
+                    <button type="button" class="btn btn-success btn-modal" id="deleteButton">Да, удалить</button>
+                    <button type="button" class="btn btn-danger btn-modal" data-bs-dismiss="modal">Не удалять</button>
                 </div>
             </div>
         </div>
