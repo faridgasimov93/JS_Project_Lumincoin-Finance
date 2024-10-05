@@ -44,6 +44,7 @@ html, body {
 
 .invalid-feedback {
     display: block !important;
+    font-size: 14px;
 }
 
 .error-styles {
@@ -178,12 +179,15 @@ button[aria-expanded="true"] .arrow-icon svg {
     padding: 20px 0 40px 20px;
 }
 
-#balance {
+
+.balance {
     margin-left: 10px;
+    color: var(--bs-primary);
+    cursor: pointer;
 }
 
 .user-name {
-    margin-left: 16px;
+    margin-left: 5px;
     font-weight: 400;
     font-size: 14px;
     color: #052c65;
@@ -263,15 +267,22 @@ button[aria-expanded="true"] .arrow-icon svg {
     margin: 0 10px;
 }
 
-.flatpickr-custom-styles {
-    border: none;
-    width: 50px;
-    outline: none;
-    color: #6C757D;
+.date-btn {
+    width: 100px;
+    font-size: 16px;
+    font-weight: 500;
 }
 
+.datepicker-btn {
+    border: none;
+    outline: none;
+    width: 92px;
+    text-decoration: underline;
+}
+
+
 .table-actions {
-    margin: 40px 60px;
+    margin-top: 40px;
 }
 
 .table-title {

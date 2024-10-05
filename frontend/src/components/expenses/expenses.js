@@ -22,6 +22,7 @@ export class Expenses {
         }
 
         this.showRecords(result.response);
+
     }
 
     showRecords(expenses) {

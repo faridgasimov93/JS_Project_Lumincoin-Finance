@@ -1,36 +1,55 @@
-import 'flatpickr/dist/flatpickr.min.css';
-import flatpickr from "flatpickr";
-import {Russian} from "flatpickr/dist/l10n/ru.js";
-import rangePlugin from "flatpickr/dist/plugins/rangePlugin"; // плагин для выбора диапозона от первой до второй даты
-require("flatpickr/dist/themes/dark.css"); // стиль календаря
+import AirDatepicker from "air-datepicker";
+import 'air-datepicker/air-datepicker.css';
 
 export class DatePickingUtil {
 
     static datePicking() {
-        document.querySelectorAll('.datepicker-btn').forEach(button => {
+        document.querySelectorAll('.date-btn').forEach(button => {
             button.addEventListener('click', function () {
-                document.querySelectorAll('.datepicker-btn').forEach(btn => {
-                    btn.classList.remove('btn-outline-secondary');
+                document.querySelectorAll('.date-btn').forEach(btn => {
+                    btn.classList.remove('btn-secondary');
+                    btn.classList.add('btn-outline-secondary');
                 });
+
+                this.classList.remove('btn-outline-secondary');
                 this.classList.add('btn-secondary');
 
                 if (this.id === 'intervalBtn') {
-                    document.getElementById('dateRangeInputs').classList.remove('hidden');
+                    document.getElementById('dateRangeInputs').classList.remove('d-none');
                 } else {
-                    document.getElementById('dateRangeInputs').classList.add('hidden');
+                    document.getElementById('dateRangeInputs').classList.add('d-none');
                 }
             });
-
-            flatpickr('#first-datepicker', {
-                "locale": Russian,
-                "plugins": [new rangePlugin({input: "#second-datepicker"})]
-            });
-
         });
 
-        flatpickr('#income-create-datepicker', {
-            "locole": Russian,
-        })
+       const startDatePicker = new AirDatepicker('#startDate', {
+            buttons: "clear",
+           autoClose: true,
+            onSelect({date}) {
+                if (date) {
+                    endDatePicker.update({
+                        minDate: date instanceof Array ? date[0] : date
+                    });
+                }
+            }
+        });
 
+        const endDatePicker = new AirDatepicker('#endDate', {
+            buttons: "clear",
+            autoClose: true,
+            onSelect({date}) {
+                if (date) {
+                    startDatePicker.update({
+                        maxDate: date instanceof Array ? date[0] : date
+                    });
+                }
+            }
+        });
+
+        const createOperationDatePicker = new AirDatepicker('#operationDatepicker', {
+            buttons: "clear",
+            autoClose: true,
+            maxDate: new Date(),
+        })
     }
 }

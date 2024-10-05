@@ -58,6 +58,7 @@ export class AuthUtils {
             }
         }
         if(!result) {
+            console.log('Invalid refresh token, deleting auth info');
             this.deleteAuthInfo()
         }
 

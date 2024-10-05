@@ -20,6 +20,7 @@ export class Income {
         if (result.error || !result.response || (result.response && (result.response.error || !result.response))) {
             return alert("Возникла ошибка при запросе доходов! Обратитесь в поддержку.");
         }
+
         this.showRecords(result.response);
     }
 
