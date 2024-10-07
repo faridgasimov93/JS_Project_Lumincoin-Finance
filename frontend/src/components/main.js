@@ -1,8 +1,10 @@
+import {DatePickingUtil} from "../ulits/date-picking-util";
 
 export class Main {
 
     constructor() {
-        console.log('На этой странице написать код для ГЛАВНОЙ страницы');
+
+        DatePickingUtil.datePicking();
     }
 
 }

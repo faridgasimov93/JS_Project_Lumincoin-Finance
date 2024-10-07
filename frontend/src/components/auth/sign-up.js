@@ -110,7 +110,7 @@ export class SignUp {
                 id: result.user.id
             })
 
-            this.openNewRoute('/');
+            this.openNewRoute('/login');
         }
     }
 }
