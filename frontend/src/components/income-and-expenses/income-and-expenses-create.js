@@ -22,6 +22,8 @@ export class IncomeAndExpensesCreate {
 
         this.operationCommentaryInput = document.getElementById('operationCommentary');
 
+        this.categoriesMap = {}; //объект для хранения категорий по именам и ID
+
 
         const urlParams = new URLSearchParams(window.location.search);
         const operationType = urlParams.get('type');
@@ -48,12 +50,17 @@ export class IncomeAndExpensesCreate {
             return;
         }
         this.operationCategorySelect.innerHTML = '<option value="">Выберите категорию</option>';
+        this.categoriesMap = {};
 
         result.response.forEach(item => {
             const option = document.createElement('option');
-            option.value = item.id;
-            option.textContent = item.title;
+
+            option.value = item.title; // сохраняет названия категорий
+            option.textContent = item.title; // отображает названия категорий
+
+            this.categoriesMap[item.title] = item.id; // мапит title в ID
             this.operationCategorySelect.appendChild(option);
+
         });
     }
 
@@ -103,14 +110,18 @@ export class IncomeAndExpensesCreate {
         e.preventDefault();
 
         if (this.validateForm()) {
+
             const operationType = this.incomeExpenseSelector.value === "1" ? "income" : "expense";
             const formattedDate = this.convertToBackendFormat(this.operationDatepickerInput.value);
+            const categoryTitle = this.operationCategorySelect.value;
+            const categoryId = this.categoriesMap[categoryTitle]; // Сохраняет ID выбранной категории
+
             const result = await HttpUtils.request('/operations', 'POST', true,{
                 type: operationType,
                 amount: this.operationAmountInput.value,
                 date: formattedDate,
                 comment: this.operationCommentaryInput.value,
-                category_id: this.operationCategorySelect.value,
+                category_id: categoryId ,
             });
             if (result.redirect) {
                 return this.openNewRoute(result.redirect);
