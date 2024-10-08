@@ -57,6 +57,15 @@ export class IncomeAndExpensesCreate {
         });
     }
 
+    // Функция для конвертации формата даты
+     convertToBackendFormat(dateStr) {
+        // Ожидаемый формат: DD.MM.YYYY
+        const [day, month, year] = dateStr.split(".");
+
+        // Возвращаем дату в формате YYYY-MM-DD
+        return `${year}-${month}-${day}`;
+    }
+
     validateForm() {
         let isValid = true;
 
@@ -95,11 +104,11 @@ export class IncomeAndExpensesCreate {
 
         if (this.validateForm()) {
             const operationType = this.incomeExpenseSelector.value === "1" ? "income" : "expense";
-
+            const formattedDate = this.convertToBackendFormat(this.operationDatepickerInput.value);
             const result = await HttpUtils.request('/operations', 'POST', true,{
                 type: operationType,
                 amount: this.operationAmountInput.value,
-                date: this.operationDatepickerInput.value,
+                date: formattedDate,
                 comment: this.operationCommentaryInput.value,
                 category_id: this.operationCategorySelect.value,
             });

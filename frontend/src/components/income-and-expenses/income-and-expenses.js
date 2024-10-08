@@ -105,7 +105,11 @@ export class IncomeAndExpenses {
             trElement.appendChild(thElement);
 
             const tdIncomeElement = document.createElement('td');
-            tdIncomeElement.classList.add('table-type-income');
+            if (tdIncomeElement.innerText = 'income') {
+                tdIncomeElement.classList.add('table-type-income');
+            } else {
+                tdIncomeElement.classList.add('table-type-expense');
+            }
             tdIncomeElement.innerText = operation.type;
             trElement.appendChild(tdIncomeElement);
 
