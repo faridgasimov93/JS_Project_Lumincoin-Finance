@@ -21,6 +21,7 @@ export class IncomeAndExpensesCreate {
         this.operationDatepickerErrorInput = document.getElementById('operationDatepickerError');
 
         this.operationCommentaryInput = document.getElementById('operationCommentary');
+        this.operationCommentaryErrorInput = document.getElementById('operationCommentaryError');
 
         this.categoriesMap = {}; //объект для хранения категорий по именам и ID
 
@@ -102,6 +103,14 @@ export class IncomeAndExpensesCreate {
             this.operationDatepickerErrorInput.classList.replace('valid-feedback', 'invalid-feedback');
             isValid = false;
         }
+        if (this.operationCommentaryInput.value) {
+            this.operationCommentaryInput.classList.remove('is-invalid');
+            this.operationCommentaryErrorInput.classList.replace('invalid-feedback', 'valid-feedback');
+        } else {
+            this.operationCommentaryInput.classList.add('is-invalid');
+            this.operationCommentaryErrorInput.classList.replace('valid-feedback', 'invalid-feedback');
+            isValid = false;
+        }
 
         return isValid;
     }
@@ -127,7 +136,7 @@ export class IncomeAndExpensesCreate {
                 return this.openNewRoute(result.redirect);
             }
             if (result.error || !result.response || (result.response && (result.response.error || !result.response))) {
-                return alert("Возникла ошибка при создании дохода! Обратитесь в поддержку.");
+                return alert("Возникла ошибка при создании категории! Обратитесь в поддержку.");
             }
             this.openNewRoute('/income-and-expenses');
         }

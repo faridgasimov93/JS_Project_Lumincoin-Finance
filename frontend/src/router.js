@@ -34,7 +34,7 @@ export class Router {
                 load: () => {
                     const accessCheck = new AuthCheckUtils(this.openNewRoute.bind(this));
                     if (accessCheck.checkAndRedirect()) {
-                        new Main();
+                        new Main(this.openNewRoute.bind(this));
                         new Balance();
                         new UserName();
                     }

@@ -81,16 +81,17 @@ export class DatePickingUtil {
     }
     static updateOperationsTable(operations) {
         const recordsElement = document.getElementById('records');
-        recordsElement.innerHTML = '';
+        if (recordsElement) {
+            recordsElement.innerHTML = '';
 
-        let index = 1;
-        operations.forEach((operation) => {
+            let index = 1;
+            operations.forEach((operation) => {
 
-            const trElement = document.createElement('tr');
-            const formattedDate = new Date(operation.date).toLocaleDateString('ru-RU');
-            const typeClass = operation.type === 'income' ? 'table-type-income' : 'table-type-expenses';
+                const trElement = document.createElement('tr');
+                const formattedDate = new Date(operation.date).toLocaleDateString('ru-RU');
+                const typeClass = operation.type === 'income' ? 'table-type-income' : 'table-type-expenses';
 
-            trElement.innerHTML = `
+                trElement.innerHTML = `
             <th scope="row" class="text-center">${index}</th>
             <td class="${typeClass}">${operation.type}</td>
             <td>${operation.category}</td>
@@ -120,9 +121,10 @@ export class DatePickingUtil {
                 </a>
             </td>
             `
-            index++;
-            recordsElement.appendChild(trElement);
-        });
+                index++;
+                recordsElement.appendChild(trElement);
+            });
+        }
     }
 
     static convertToBackendFormat(dateStr) {

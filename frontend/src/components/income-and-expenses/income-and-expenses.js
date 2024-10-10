@@ -8,18 +8,21 @@ export class IncomeAndExpenses {
         this.openNewRoute = openNewRoute;
         this.allOperations = []; // Сохраняем все операции для фильтрации
         this.filteredOperations = []; // Текущие отфильтрованные операции
+        this.operationToDelete = null;
+
+
 
         this.setDateFilterListeners(); // Устанавливаем обработчики для фильтров даты
-
 
         DatePickingUtil.datePicking();
         this.getOperations().then();
         this.filterOperations();
+        this.setModalListeners().then();
     }
 
     async getOperations() {
         const result = await HttpUtils.request('/operations?period=all');
-        console.log(result.response);
+        // console.log(result.response);
 
         if (result.redirect) {
             return this.openNewRoute(result.redirect);
@@ -110,7 +113,7 @@ export class IncomeAndExpenses {
             <td>${formattedDate}</td>
             <td>${operation.comment}</td>
             <td class="table-actions-buttons d-flex align-items-center justify-content-end">
-                <div class="delete-table" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                <div class="delete-table" data-operation-id="${operation.id}" data-bs-toggle="modal" data-bs-target="#deleteModal">
                     <svg width="14" height="15" viewBox="0 0 14 15" fill="none"
                                  xmlns="http://www.w3.org/2000/svg">
                                 <path d="M4.5 5.5C4.77614 5.5 5 5.72386 5 6V12C5 12.2761 4.77614 12.5 4.5 12.5C4.22386 12.5 4 12.2761 4 12V6C4 5.72386 4.22386 5.5 4.5 5.5Z"
@@ -134,6 +137,47 @@ export class IncomeAndExpenses {
             `
             index++;
             recordsElement.appendChild(trElement);
+        });
+
+        this.attachDeleteListeners();
+    }
+
+    attachDeleteListeners() {
+        const deleteButtons = document.querySelectorAll('.delete-table');
+        if (deleteButtons.length === 0) {
+            return;
+        }
+
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', (event) => {
+                const operationId = event.currentTarget.getAttribute('data-operation-id');
+                this.operationToDelete = operationId;
+            });
+        });
+    }
+
+
+
+   async setModalListeners() {
+        const modalSuccessButton = document.querySelector('.btn-modal-success');
+
+        if (!modalSuccessButton) {
+            return;
+        }
+        document.querySelector('.btn-modal-success').addEventListener('click', async () => {
+            if (this.operationToDelete) {
+                // Proceed with deletion
+                const result = await HttpUtils.request('/operations/' + this.operationToDelete, 'DELETE', true);
+
+                if (result.redirect) {
+                    return this.openNewRoute(result.redirect);
+                }
+                if (result.error || !result.response || (result.response && result.response.error)) {
+                    return alert("Возникла ошибка при удалении Операции! Обратитесь в поддержку.");
+                }
+
+                this.openNewRoute('/income-and-expenses');
+            }
         });
     }
 
