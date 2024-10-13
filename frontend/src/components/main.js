@@ -6,13 +6,20 @@ export class Main {
 
     constructor(openNewRoute) {
         this.openNewRoute= openNewRoute;
-
-        DatePickingUtil.datePicking();
+        this.operations = []; // Сохраняем все операции для фильтрации
+        this.filteredOperations = []; // Текущие отфильтрованные операции
 
         this.incomeChart = document.getElementById('incomeChart');
         this.expensesChart = document.getElementById('expensesChart');
 
+        this.incomeChartInstance = null;
+        this.expensesChartInstance = null;
+
+        this.setDateFilterListeners();
+        DatePickingUtil.datePicking();
+
         this.getOperations().then();
+
     }
 
     async getOperations() {
@@ -30,7 +37,9 @@ export class Main {
         }
         this.incomePieChart();
         this.expensePieChart();
+        this.filterOperations();
     }
+
 
     groupByCategory(operations) {
         return operations.reduce((acc, op) => {
@@ -40,6 +49,18 @@ export class Main {
             acc[op.category] += op.amount;
             return acc;
         }, {});
+    }
+
+    getRandomColor() {
+        // динамическая генерация цветов
+        const r = Math.floor(Math.random() * 255);
+        const g = Math.floor(Math.random() * 255);
+        const b = Math.floor(Math.random() * 255);
+        return `rgb(${r}, ${g}, ${b})`;
+    }
+
+    generateColors(labels) {
+        return labels.map(() => this.getRandomColor());
     }
 
     incomePieChart() {
@@ -97,7 +118,12 @@ export class Main {
             // Плагин для добавление отступа между диаграмой и label ( цветными кубиками )
             plugins: [legendMargin]
         };
-        new Chart(this.incomeChart, config);
+
+        if (this.incomeChartInstance) {
+            this.incomeChartInstance.destroy();
+        }
+        this.incomeChartInstance = new Chart(this.incomeChart, config);
+        // new Chart(this.incomeChart, config);
     }
 
     expensePieChart() {
@@ -156,17 +182,80 @@ export class Main {
             // Плагин для добавление отступа между диаграмой и label ( цветными кубиками )
             plugins: [legendMargin]
         };
-        new Chart(this.expensesChart, config);
+        // Если диаграмма уже существует, уничтожаем её
+        if (this.expensesChartInstance) {
+            this.expensesChartInstance.destroy();
+        }
+        // Создаём новую диаграмму и сохраняем её экземпляр
+        this.expensesChartInstance = new Chart(this.expensesChart, config);
+        // new Chart(this.expensesChart, config);
     }
 
-    getRandomColor() {
-        // динамическая генерация цветов
-        const r = Math.floor(Math.random() * 255);
-        const g = Math.floor(Math.random() * 255);
-        const b = Math.floor(Math.random() * 255);
-        return `rgb(${r}, ${g}, ${b})`;
+    filterOperations(startDate = null, endDate = null) {
+        const today = new Date();
+        let filtered = [];
+
+        if (startDate && endDate) {
+            // Фильтрация по диапазону
+            filtered = this.operations.filter(operation => {
+                const operationDate = new Date(operation.date);
+                // console.log(`Дата опепации: ${operationDate}`);
+                return operationDate >= startDate && operationDate <= endDate;
+            });
+        } else {
+            // По умолчанию фильтрует на "сегодня"
+            filtered = this.operations.filter(operation => {
+                const operationDate = new Date(operation.date);
+                return operationDate.toDateString() === today.toDateString();
+            });
+        }
+        this.filteredOperations = filtered;
+        this.incomeOperations = this.filteredOperations.filter(op => op.type === 'income');
+        this.expenseOperations = this.filteredOperations.filter(op => op.type === 'expense');
+
+        this.incomePieChart();
+        this.expensePieChart();
     }
-    generateColors(labels) {
-        return labels.map(() => this.getRandomColor());
+
+    setDateFilterListeners() {
+
+        document.querySelector('#todayBtn').addEventListener('click', () => this.filterOperations());
+
+        document.querySelector('#weekBtn').addEventListener('click', () => {
+            const today = new Date();
+            const weekAgo = new Date(today);
+            weekAgo.setDate(today.getDate() - 7);
+            this.filterOperations(weekAgo, today);
+        });
+
+        document.querySelector('#monthBtn').addEventListener('click', () => {
+            const today = new Date();
+            const monthAgo = new Date(today);
+            monthAgo.setMonth(today.getMonth() - 1);
+            this.filterOperations(monthAgo, today);
+        });
+
+        document.querySelector('#yearBtn').addEventListener('click', () => {
+            const today = new Date();
+            const yearAgo = new Date(today);
+            yearAgo.setFullYear(today.getFullYear() - 1);
+            this.filterOperations(yearAgo, today);
+        });
+
+        document.querySelector('#allBtn').addEventListener('click', () => {
+            this.filteredOperations = this.operations;
+            this.incomeOperations = this.filteredOperations.filter(op => op.type === 'income');
+            this.expenseOperations = this.filteredOperations.filter(op => op.type === 'expense');
+            this.incomePieChart();
+            this.expensePieChart();
+        });
+
+        document.querySelector('#intervalBtn').addEventListener('click', () => {
+            const startDate = new Date(document.querySelector('#startDate').value);
+            const endDate = new Date(document.querySelector('#endDate').value);
+            if (startDate && endDate) {
+                this.filterOperations(startDate, endDate);
+            }
+        });
     }
 }

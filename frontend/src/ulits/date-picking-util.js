@@ -52,7 +52,21 @@ export class DatePickingUtil {
             }
         });
 
-        const createOperationDatePicker = new AirDatepicker('#operationDatepicker', {
+        const pieChartStartDatePicker = new AirDatepicker('#startDatePicker', {
+            buttons: "clear",
+            autoClose: true,
+            onSelect({date}) {
+                if (date) {
+                    endDatePicker.update({
+                        minDate: date instanceof Array ? date[0] : date
+                    });
+                }
+                // DatePickingUtil.filterOperationsByDateRange().then();
+            }
+        })
+
+
+        new AirDatepicker('#operationDatepicker', {
             buttons: "clear",
             autoClose: true,
             maxDate: new Date(),
@@ -65,9 +79,8 @@ export class DatePickingUtil {
 
         // Если хотя бы одна дата выбрана, отправляем запрос
         if (startDateInput && endDateInput) {
-            const startDate = DatePickingUtil.convertToBackendFormat(startDateInput);
-            const endDate = DatePickingUtil.convertToBackendFormat(endDateInput);
-
+            const startDate = this.convertToBackendFormat(startDateInput);
+            const endDate = this.convertToBackendFormat(endDateInput);
 
             // Запрос на сервер для получения операций за диапазон дат
             const result = await HttpUtils.request(`/operations?period=interval&dateFrom=${startDate}&dateTo=${endDate}`);
@@ -75,10 +88,10 @@ export class DatePickingUtil {
                 alert("Ошибка при загрузке операций за выбранный диапазон дат!");
                 return;
             }
-
-            DatePickingUtil.updateOperationsTable(result.response);
+            this.updateOperationsTable(result.response);
         }
     }
+
     static updateOperationsTable(operations) {
         const recordsElement = document.getElementById('records');
         if (recordsElement) {
@@ -126,6 +139,7 @@ export class DatePickingUtil {
             });
         }
     }
+
 
     static convertToBackendFormat(dateStr) {
         const [day, month, year] = dateStr.split(".");
