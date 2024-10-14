@@ -61,7 +61,6 @@ export class DatePickingUtil {
                         minDate: date instanceof Array ? date[0] : date
                     });
                 }
-                // DatePickingUtil.filterOperationsByDateRange().then();
             }
         })
 
