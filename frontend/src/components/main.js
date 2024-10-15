@@ -64,7 +64,9 @@ export class Main {
     }
 
     incomePieChart() {
-
+        if (this.incomeChartInstance) {
+            this.incomeChartInstance.destroy();
+        }
         const incomeByCategory = this.groupByCategory(this.incomeOperations);
         const incomeLabels = Object.keys(incomeByCategory);
         const incomeData = Object.values(incomeByCategory);
@@ -119,14 +121,16 @@ export class Main {
             plugins: [legendMargin]
         };
 
-        if (this.incomeChartInstance) {
-            this.incomeChartInstance.destroy();
-        }
         this.incomeChartInstance = new Chart(this.incomeChart, config);
+
         // new Chart(this.incomeChart, config);
     }
 
     expensePieChart() {
+        if (this.expensesChartInstance) {
+            this.expensesChartInstance.destroy();
+        }
+
         const expenseByCategory = this.groupByCategory(this.expenseOperations);
         const expenseLabels = Object.keys(expenseByCategory);
         const expenseData = Object.values(expenseByCategory);
@@ -182,13 +186,8 @@ export class Main {
             // Плагин для добавление отступа между диаграмой и label ( цветными кубиками )
             plugins: [legendMargin]
         };
-        // Если диаграмма уже существует, уничтожаем её
-        if (this.expensesChartInstance) {
-            this.expensesChartInstance.destroy();
-        }
-        // Создаём новую диаграмму и сохраняем её экземпляр
+
         this.expensesChartInstance = new Chart(this.expensesChart, config);
-        // new Chart(this.expensesChart, config);
     }
 
     filterOperations(startDate = null, endDate = null) {
@@ -257,5 +256,21 @@ export class Main {
                 this.filterOperations(startDate, endDate);
             }
         });
+
+
+    }
+
+    filterPieChartsByDateRange(startDate, endDate) {
+
+        let filtered = this.operations.filter(operation => {
+            const operationDate = new Date(operation.date);
+            return operationDate >= startDate && operationDate <= endDate;
+        });
+
+        this.incomeOperations = filtered.filter(op => op.type === 'income');
+        this.expenseOperations = filtered.filter(op => op.type === 'expense');
+
+        this.incomePieChart();
+        this.expensePieChart();
     }
 }

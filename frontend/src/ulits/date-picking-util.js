@@ -1,6 +1,8 @@
 import AirDatepicker from "air-datepicker";
 import 'air-datepicker/air-datepicker.css';
 import {HttpUtils} from "./http-utils";
+import {Main} from "../components/main";
+import es from "air-datepicker/locale/es";
 
 export class DatePickingUtil {
 
@@ -80,16 +82,21 @@ export class DatePickingUtil {
         if (startDateInput && endDateInput) {
             const startDate = this.convertToBackendFormat(startDateInput);
             const endDate = this.convertToBackendFormat(endDateInput);
-
-            // Запрос на сервер для получения операций за диапазон дат
             const result = await HttpUtils.request(`/operations?period=interval&dateFrom=${startDate}&dateTo=${endDate}`);
-            if (result.error || !result.response) {
-                alert("Ошибка при загрузке операций за выбранный диапазон дат!");
-                return;
+            // Запрос на сервер для получения операций за диапазон дат
+            if (document.getElementById('records')) {
+                if (result.error || !result.response) {
+                    alert("Ошибка при загрузке операций за выбранный диапазон дат!");
+                    return;
+                }
+                this.updateOperationsTable(result.response);
+            } else {
+                const mainPageInstance = new Main();
+                mainPageInstance.filterPieChartsByDateRange(startDate, endDate);
             }
-            this.updateOperationsTable(result.response);
         }
     }
+
 
     static updateOperationsTable(operations) {
         const recordsElement = document.getElementById('records');
@@ -102,10 +109,11 @@ export class DatePickingUtil {
                 const trElement = document.createElement('tr');
                 const formattedDate = new Date(operation.date).toLocaleDateString('ru-RU');
                 const typeClass = operation.type === 'income' ? 'table-type-income' : 'table-type-expenses';
+                const typeText = operation.type === 'income' ? 'доход' : 'расход';
 
                 trElement.innerHTML = `
             <th scope="row" class="text-center">${index}</th>
-            <td class="${typeClass}">${operation.type}</td>
+            <td class="${typeClass}">${typeText}</td>
             <td>${operation.category}</td>
             <td>${operation.amount + ' $'}</td>
             <td>${formattedDate}</td>

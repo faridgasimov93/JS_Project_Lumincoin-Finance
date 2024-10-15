@@ -10,8 +10,6 @@ export class IncomeAndExpenses {
         this.filteredOperations = []; // Текущие отфильтрованные операции
         this.operationToDelete = null;
 
-
-
         this.setDateFilterListeners(); // Устанавливаем обработчики для фильтров даты
 
         DatePickingUtil.datePicking();
@@ -104,10 +102,11 @@ export class IncomeAndExpenses {
             const trElement = document.createElement('tr');
             const formattedDate = new Date(operation.date).toLocaleDateString('ru-RU');
             const typeClass = operation.type === 'income' ? 'table-type-income' : 'table-type-expenses';
+            const typeText = operation.type === 'income' ? 'доход' : 'расход';
 
             trElement.innerHTML = `
             <th scope="row" class="text-center">${index}</th>
-            <td class="${typeClass}">${operation.type}</td>
+            <td class="${typeClass}">${typeText}</td>
             <td>${operation.category}</td>
             <td>${operation.amount + ' $'}</td>
             <td>${formattedDate}</td>
