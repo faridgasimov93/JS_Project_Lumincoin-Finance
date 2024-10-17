@@ -1,45 +1,57 @@
-import {DatePickingUtil} from "../ulits/date-picking-util";
-import Chart from 'chart.js/auto';
-import {HttpUtils} from "../ulits/http-utils";
+import Chart from "chart.js/auto";
+import { DatePickingUtil } from "../ulits/date-picking-util";
+import { HttpUtils } from "../ulits/http-utils";
 
 export class Main {
 
     constructor(openNewRoute) {
-        this.openNewRoute= openNewRoute;
+        this.openNewRoute = openNewRoute;
         this.operations = []; // Сохраняем все операции для фильтрации
-        this.filteredOperations = []; // Текущие отфильтрованные операции
 
-        this.incomeChart = document.getElementById('incomeChart');
-        this.expensesChart = document.getElementById('expensesChart');
+        this.incomeChart = document.getElementById("incomeChart");
+        this.expensesChart = document.getElementById("expensesChart");
 
         this.incomeChartInstance = null;
         this.expensesChartInstance = null;
 
         this.setDateFilterListeners();
-        DatePickingUtil.datePicking();
 
-        this.getOperations().then();
+        DatePickingUtil.datePicking((startDate, endDate) => {
+            this.getOperations(startDate, endDate);
+        });
+
+        const today = new Date();
+        this.getOperations(today, today);
 
     }
 
-    async getOperations() {
-        const result = await HttpUtils.request('/operations?period=all');
-        this.operations = result.response;
-        this.incomeOperations = this.operations.filter(op => op.type === 'income');
-        this.expenseOperations = this.operations.filter(op => op.type === 'expense');
-        console.log(result.response);
+    async getOperations(startDate, endDate, customUrl) {
+        const result = await HttpUtils.request(
+            customUrl ??
+            `/operations?period=interval&dateFrom=${startDate}&dateTo=${endDate}`
+        );
+
+        if (result.error) {
+            return alert(
+                "Возникла ошибка при запросе доходов и расходов! Обратитесь в поддержку."
+            );
+        }
+
         if (result.redirect) {
             return this.openNewRoute(result.redirect);
         }
 
-        if (result.error || !result.response || (result.response && (result.response.error || !result.response))) {
-            return alert("Возникла ошибка при запросе доходов и расходов! Обратитесь в поддержку.");
-        }
+        this.operations = result.response;
+        this.incomeOperations = this.operations.filter(
+            (op) => op.type === "income"
+        );
+        this.expenseOperations = this.operations.filter(
+            (op) => op.type === "expense"
+        );
+
         this.incomePieChart();
         this.expensePieChart();
-        this.filterOperations();
     }
-
 
     groupByCategory(operations) {
         return operations.reduce((acc, op) => {
@@ -64,45 +76,44 @@ export class Main {
     }
 
     incomePieChart() {
-        if (this.incomeChartInstance) {
-            this.incomeChartInstance.destroy();
-        }
         const incomeByCategory = this.groupByCategory(this.incomeOperations);
         const incomeLabels = Object.keys(incomeByCategory);
         const incomeData = Object.values(incomeByCategory);
         const backgroundColors = this.generateColors(incomeLabels);
 
         const legendMargin = {
-            id: 'legendMargin',
+            id: "legendMargin",
             beforeInit(chart) {
                 // console.log(chart.legend.fit);
                 const fitValue = chart.legend.fit;
                 chart.legend.fit = function fit() {
                     fitValue.bind(chart.legend)();
-                    return this.height += 30;
-                }
-            }
-        }
+                    return (this.height += 30);
+                };
+            },
+        };
 
         const data = {
             labels: incomeLabels,
             options: {
                 scales: {
                     y: {
-                        beginAtZero: true
-                    }
+                        beginAtZero: true,
+                    },
                 },
             },
-            datasets: [{
-                label: 'Сумма доходов',
-                data: incomeData,
-                backgroundColor: backgroundColors,
-                hoverOffset: 4
-            }]
+            datasets: [
+                {
+                    label: "Сумма доходов",
+                    data: incomeData,
+                    backgroundColor: backgroundColors,
+                    hoverOffset: 4,
+                },
+            ],
         };
 
         let config = {
-            type: 'pie',
+            type: "pie",
             data: data,
             options: {
                 plugins: {
@@ -111,64 +122,64 @@ export class Main {
                             // Изменение ширины блоков цвета
                             boxWidth: 35,
                             padding: 10,
-                            usePointStyle: false
-                        }
-                    }
+                            usePointStyle: false,
+                        },
+                    },
                 },
-                responsive: true
+                responsive: true,
             },
             // Плагин для добавление отступа между диаграмой и label ( цветными кубиками )
-            plugins: [legendMargin]
+            plugins: [legendMargin],
         };
 
-        this.incomeChartInstance = new Chart(this.incomeChart, config);
-
-        // new Chart(this.incomeChart, config);
+        if (this.incomeChartInstance) {
+            this.incomeChartInstance.data = data;
+            this.incomeChartInstance.update();
+        } else {
+            this.incomeChartInstance = new Chart(this.incomeChart, config);
+        }
     }
 
     expensePieChart() {
-        if (this.expensesChartInstance) {
-            this.expensesChartInstance.destroy();
-        }
-
         const expenseByCategory = this.groupByCategory(this.expenseOperations);
         const expenseLabels = Object.keys(expenseByCategory);
         const expenseData = Object.values(expenseByCategory);
 
         const backgroundColors = this.generateColors(expenseLabels);
 
-
         const legendMargin = {
-            id: 'legendMargin',
+            id: "legendMargin",
             beforeInit(chart) {
                 // console.log(chart.legend.fit);
                 const fitValue = chart.legend.fit;
                 chart.legend.fit = function fit() {
                     fitValue.bind(chart.legend)();
-                    return this.height += 30;
-                }
-            }
-        }
+                    return (this.height += 30);
+                };
+            },
+        };
 
         const data = {
             labels: expenseLabels,
             options: {
                 scales: {
                     y: {
-                        beginAtZero: true
-                    }
+                        beginAtZero: true,
+                    },
                 },
             },
-            datasets: [{
-                label: 'Сумма расходов',
-                data: expenseData,
-                backgroundColor: backgroundColors,
-                hoverOffset: 4
-            }]
+            datasets: [
+                {
+                    label: "Сумма расходов",
+                    data: expenseData,
+                    backgroundColor: backgroundColors,
+                    hoverOffset: 4,
+                },
+            ],
         };
 
         let config = {
-            type: 'pie',
+            type: "pie",
             data: data,
             options: {
                 plugins: {
@@ -177,100 +188,53 @@ export class Main {
                             // Изменение ширины блоков цвета
                             boxWidth: 35,
                             padding: 10,
-                            usePointStyle: false
-                        }
-                    }
+                            usePointStyle: false,
+                        },
+                    },
                 },
-                responsive: true
+                responsive: true,
             },
             // Плагин для добавление отступа между диаграмой и label ( цветными кубиками )
-            plugins: [legendMargin]
+            plugins: [legendMargin],
         };
 
-        this.expensesChartInstance = new Chart(this.expensesChart, config);
-    }
-
-    filterOperations(startDate = null, endDate = null) {
-        const today = new Date();
-        let filtered = [];
-
-        if (startDate && endDate) {
-            // Фильтрация по диапазону
-            filtered = this.operations.filter(operation => {
-                const operationDate = new Date(operation.date);
-                // console.log(`Дата опепации: ${operationDate}`);
-                return operationDate >= startDate && operationDate <= endDate;
-            });
+        if (this.expensesChartInstance) {
+            this.expensesChartInstance.data = data;
+            this.expensesChartInstance.update();
         } else {
-            // По умолчанию фильтрует на "сегодня"
-            filtered = this.operations.filter(operation => {
-                const operationDate = new Date(operation.date);
-                return operationDate.toDateString() === today.toDateString();
-            });
+            this.expensesChartInstance = new Chart(this.expensesChart, config);
         }
-        this.filteredOperations = filtered;
-        this.incomeOperations = this.filteredOperations.filter(op => op.type === 'income');
-        this.expenseOperations = this.filteredOperations.filter(op => op.type === 'expense');
-
-        this.incomePieChart();
-        this.expensePieChart();
     }
 
     setDateFilterListeners() {
+        document.querySelector("#todayBtn").addEventListener("click", () => {
+            const today = new Date();
+            this.getOperations(today, today);
+        });
 
-        document.querySelector('#todayBtn').addEventListener('click', () => this.filterOperations());
-
-        document.querySelector('#weekBtn').addEventListener('click', () => {
+        document.querySelector("#weekBtn").addEventListener("click", () => {
             const today = new Date();
             const weekAgo = new Date(today);
             weekAgo.setDate(today.getDate() - 7);
-            this.filterOperations(weekAgo, today);
+            this.getOperations(weekAgo, today);
         });
 
-        document.querySelector('#monthBtn').addEventListener('click', () => {
+        document.querySelector("#monthBtn").addEventListener("click", () => {
             const today = new Date();
             const monthAgo = new Date(today);
             monthAgo.setMonth(today.getMonth() - 1);
-            this.filterOperations(monthAgo, today);
+            this.getOperations(monthAgo, today);
         });
 
-        document.querySelector('#yearBtn').addEventListener('click', () => {
+        document.querySelector("#yearBtn").addEventListener("click", () => {
             const today = new Date();
             const yearAgo = new Date(today);
             yearAgo.setFullYear(today.getFullYear() - 1);
-            this.filterOperations(yearAgo, today);
+            this.getOperations(yearAgo, today);
         });
 
-        document.querySelector('#allBtn').addEventListener('click', () => {
-            this.filteredOperations = this.operations;
-            this.incomeOperations = this.filteredOperations.filter(op => op.type === 'income');
-            this.expenseOperations = this.filteredOperations.filter(op => op.type === 'expense');
-            this.incomePieChart();
-            this.expensePieChart();
+        document.querySelector("#allBtn").addEventListener("click", () => {
+            this.getOperations(undefined, undefined, `/operations?period=all`);
         });
-
-        document.querySelector('#intervalBtn').addEventListener('click', () => {
-            const startDate = new Date(document.querySelector('#startDate').value);
-            const endDate = new Date(document.querySelector('#endDate').value);
-            if (startDate && endDate) {
-                this.filterOperations(startDate, endDate);
-            }
-        });
-
-
-    }
-
-    filterPieChartsByDateRange(startDate, endDate) {
-
-        let filtered = this.operations.filter(operation => {
-            const operationDate = new Date(operation.date);
-            return operationDate >= startDate && operationDate <= endDate;
-        });
-
-        this.incomeOperations = filtered.filter(op => op.type === 'income');
-        this.expenseOperations = filtered.filter(op => op.type === 'expense');
-
-        this.incomePieChart();
-        this.expensePieChart();
     }
 }
