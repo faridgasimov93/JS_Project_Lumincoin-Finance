@@ -2,7 +2,7 @@
   "name": "Lumincoin_Finance",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "login.js",
   "scripts": {
     "build": "webpack",
     "dev": "webpack serve --open"
@@ -22,8 +22,8 @@
     "webpack-dev-server": "^5.1.0"
   },
   "dependencies": {
+    "air-datepicker": "^3.5.3",
     "bootstrap": "^5.3.3",
-    "chart.js": "^4.4.4",
-    "flatpickr": "^4.6.13"
+    "chart.js": "^4.4.4"
   }
 }

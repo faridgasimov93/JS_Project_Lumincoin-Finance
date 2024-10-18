@@ -4,11 +4,14 @@
 
     <div class="category-create-block">
 
-        <input class="category-create-input form-control" type="text"
-               placeholder="Тут будет подставляться название">
+        <input class="category-create-input form-control" type="text" aria-describedby="inputGroupPrepend" id="incomeTitle">
+
+        <div class="valid-feedback" id="incomeTitleError">
+            Введите новое название категории.
+        </div>
 
         <div class="category-create-actions">
-            <a href="/income" class="btn btn-success me-2">Сохранить</a>
+            <button type="button" class="btn btn-success me-2" id="updateButton">Сохранить</button>
             <a href="/income" class="btn btn-danger">Отмена</a>
         </div>
     </div>
