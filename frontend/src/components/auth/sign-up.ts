@@ -1,13 +1,34 @@
 import {AuthUtils} from "../../ulits/auth-utils";
 
+
+interface ApiResponse {
+    error?: string;
+    user?: {
+        id: number;
+        name: string;
+        lastName: string;
+    }
+}
 export class SignUp {
 
-    constructor(openNewRoute) {
+    private openNewRoute: (url: string) => Promise<void>;
+    private nameInputElement!: HTMLElement | null;
+    private nameErrorInputElement!: HTMLElement | null;
+    private emailInputElement!: HTMLElement | null;
+    private emailErrorInputElement!: HTMLElement | null;
+    private passwordInputElement!: HTMLElement | null;
+    private passwordErrorInputElement!: HTMLElement | null;
+    private repeatPasswordInputElement!: HTMLElement | null ;
+    private repeatPasswordErrorInputElement!: HTMLElement | null ;
+    private commonErrorElement!: HTMLElement | null ;
+
+    constructor(openNewRoute: (url: string) => Promise<void>) {
 
         this.openNewRoute = openNewRoute;
 
         if (AuthUtils.getAuthInfo(AuthUtils.accessTokenKey)) {
-            return this.openNewRoute('/');
+            void this.openNewRoute('/');
+            return 
         }
 
         this.nameInputElement = document.getElementById('name');
@@ -24,92 +45,105 @@ export class SignUp {
 
         this.commonErrorElement = document.getElementById('common-error');
 
-
-        document.getElementById('process-button').addEventListener('click', this.singUp.bind(this));
+        const processButton = document.getElementById('process-button');
+        if (processButton) {
+        processButton.addEventListener('click', this.singUp.bind(this));
+        }
     }
 
-    validateForm() {
-        let isValid = true;
+    private validateForm():boolean {
+        let isValid:boolean = true;
 
-        if (this.nameInputElement.value && this.nameInputElement.value.match(/^[А-ЯЁ][а-яё]+(?: [А-ЯЁ][а-яё]+)*[^\s]$/)) {
-            this.nameInputElement.classList.remove('is-invalid');
-            this.nameErrorInputElement.classList.replace('invalid-feedback', 'valid-feedback');
-        } else {
-            this.nameInputElement.classList.add('is-invalid');
-            this.nameErrorInputElement.classList.replace('valid-feedback', 'invalid-feedback');
-            isValid = false;
+        if (this.nameInputElement && this.nameErrorInputElement) {
+            if ((this.nameInputElement as HTMLInputElement).value && (this.nameInputElement as HTMLInputElement).value.match(/^[А-ЯЁ][а-яё]+(?: [А-ЯЁ][а-яё]+)*[^\s]$/)) {
+                this.nameInputElement.classList.remove('is-invalid');
+                this.nameErrorInputElement.classList.replace('invalid-feedback', 'valid-feedback');
+            } else {
+                this.nameInputElement.classList.add('is-invalid');
+                this.nameErrorInputElement.classList.replace('valid-feedback', 'invalid-feedback');
+                isValid = false;
+            } 
         }
-
-        if (this.emailInputElement.value && this.emailInputElement.value.match(/^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/)) {
-            this.emailInputElement.classList.remove('is-invalid');
-            this.emailErrorInputElement.classList.replace('invalid-feedback', 'valid-feedback');
-        } else {
-            this.emailInputElement.classList.add('is-invalid');
-            this.emailErrorInputElement.classList.replace('valid-feedback', 'invalid-feedback');
-            isValid = false;
+        if (this.emailInputElement && this.emailErrorInputElement) {
+            if ((this.emailInputElement as HTMLInputElement).value && (this.emailInputElement as HTMLInputElement).value.match(/^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/)) {
+                this.emailInputElement.classList.remove('is-invalid');
+                this.emailErrorInputElement.classList.replace('invalid-feedback', 'valid-feedback');
+            } else {
+                this.emailInputElement.classList.add('is-invalid');
+                this.emailErrorInputElement.classList.replace('valid-feedback', 'invalid-feedback');
+                isValid = false;
+            }
         }
-
-        if (this.passwordInputElement.value && this.passwordInputElement.value.match(/^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/)) {
+        
+        if (this.passwordInputElement && this.passwordErrorInputElement) {
+          if ((this.passwordInputElement as HTMLInputElement).value && (this.passwordInputElement as HTMLInputElement).value.match(/^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/)) {
             this.passwordInputElement.classList.remove('is-invalid');
             this.passwordErrorInputElement.classList.replace('invalid-feedback', 'valid-feedback');
         } else {
             this.passwordInputElement.classList.add('is-invalid');
             this.passwordErrorInputElement.classList.replace('valid-feedback', 'invalid-feedback');
             isValid = false;
+           }  
         }
-
-        if (this.repeatPasswordInputElement.value && this.repeatPasswordInputElement.value === this.passwordInputElement.value) {
-            this.repeatPasswordInputElement.classList.remove('is-invalid');
-            this.repeatPasswordErrorInputElement.classList.replace('invalid-feedback', 'valid-feedback');
-        } else {
-            this.repeatPasswordInputElement.classList.add('is-invalid');
-            this.repeatPasswordErrorInputElement.classList.replace('valid-feedback', 'invalid-feedback');
-            isValid = false;
+        
+        if (this.repeatPasswordErrorInputElement && this.repeatPasswordInputElement && this.passwordInputElement) {
+            if ((this.repeatPasswordInputElement as HTMLInputElement).value && (this.repeatPasswordInputElement as HTMLInputElement).value === (this.passwordInputElement as HTMLInputElement).value) {
+                this.repeatPasswordInputElement.classList.remove('is-invalid');
+                this.repeatPasswordErrorInputElement.classList.replace('invalid-feedback', 'valid-feedback');
+            } else {
+                this.repeatPasswordInputElement.classList.add('is-invalid');
+                this.repeatPasswordErrorInputElement.classList.replace('valid-feedback', 'invalid-feedback');
+                isValid = false;
+            }  
         }
-
         return isValid;
     }
 
-    async singUp() {
+    private async singUp():Promise<void> {
 
+        if (this.commonErrorElement) {
         this.commonErrorElement.style.display = 'none';
+        }
 
-        if (this.validateForm()) {
+        if (this.validateForm() && this.nameInputElement) {
             // Разделение имени и фамилии
-            const fullName = this.nameInputElement.value.trim();
-            const nameParts = fullName.split(' ');
-            const firstName = nameParts[0];
-            const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
+            const fullName:string = (this.nameInputElement as HTMLInputElement).value.trim();
+            const nameParts:string[] = fullName.split(' ');
+            const firstName:string = nameParts[0];
+            const lastName:string = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
 
-            const response = await fetch('http://localhost:3000/api/signup', {
+            const response: Response = await fetch('http://localhost:3000/api/signup', {
                 method: 'POST',
                 headers: {
                     'Content-type': 'application/json',
                     'Accept': 'application/json',
                 },
-                useAuth: false,
+                // useAuth: false,
                 body: JSON.stringify({
                     name: firstName,
                     lastName: lastName,
-                    email: this.emailInputElement.value,
-                    password: this.passwordInputElement.value,
-                    passwordRepeat: this.repeatPasswordInputElement.value,
+                    email: (this.emailInputElement as HTMLInputElement).value,
+                    password: (this.passwordInputElement as HTMLInputElement).value,
+                    passwordRepeat: (this.repeatPasswordInputElement as HTMLInputElement).value,
                 })
             });
 
-            const result = await response.json();
+            const result: ApiResponse = await response.json();
 
-            if (result.error || !result.user.id || !result.user.name || !result.user.lastName) {
+            if (result.error || !result.user || !result.user.id || !result.user.name || !result.user.lastName) {
+                if (this.commonErrorElement) {
                 this.commonErrorElement.style.display = 'block';
-                return;
+                return; 
+                }
             }
 
-            AuthUtils.setAuthInfo(null, null, {
-                name: result.user.name,
-                lastName: result.user.lastName,
-                id: result.user.id
-            })
-
+            if (result.user) {
+                AuthUtils.setAuthInfo('', '', {
+                    name: result.user.name,
+                    lastName: result.user.lastName,
+                    id: result.user.id
+                })
+            }
             this.openNewRoute('/login');
         }
     }

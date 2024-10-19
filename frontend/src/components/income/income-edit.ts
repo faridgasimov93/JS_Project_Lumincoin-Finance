@@ -1,25 +1,40 @@
 import {HttpUtils} from "../../ulits/http-utils";
 
 export class IncomeEdit {
-    constructor(openNewRoute) {
+
+    private openNewRoute: (url: string) => Promise<void>;
+    private editIncomeElement: HTMLElement | null;
+    private editIncomeErrorElement: HTMLElement | null;
+    private id: string | null ;
+
+    constructor(openNewRoute: (url: string) => Promise<void>) {
         this.openNewRoute = openNewRoute;
 
         this.editIncomeElement = document.getElementById('incomeTitle');
         this.editIncomeErrorElement = document.getElementById('incomeTitleError');
 
-        const urlParams = new URLSearchParams(window.location.search);
+        const urlParams: URLSearchParams = new URLSearchParams(window.location.search);
         this.id = urlParams.get('id');
-        if (!this.id) {
-            return this.openNewRoute('/');
-        }
+        this.checkId();
 
-        this.getIncome(this.id).then();
-
-        document.getElementById('updateButton').addEventListener('click', this.updateIncome.bind(this));
+         if (this.id) {
+        this.getIncome(this.id);
     }
 
-    async getIncome(id) {
-        const result = await HttpUtils.request('/categories/income/' + id);
+        const updateButton: HTMLElement | null = document.getElementById('updateButton')
+        if (updateButton) {
+        updateButton.addEventListener('click', this.updateIncome.bind(this));
+        }
+    }
+
+    private async checkId(): Promise<void> {
+        if (!this.id) {
+            await this.openNewRoute('/');
+        }
+    }
+
+    private async getIncome(id:string):Promise<void> {
+        const result:any = await HttpUtils.request('/categories/income/' + id);
         if (result.redirect) {
             return this.openNewRoute(result.redirect);
         }
@@ -32,31 +47,31 @@ export class IncomeEdit {
         this.showIncome(result.response);
     }
 
-    showIncome(income) {
+    private showIncome(income:{ id: string, title: string }):void {
         if (income.title) {
-            this.editIncomeElement.value = income.title;
+            (this.editIncomeElement as HTMLInputElement).value = income.title;
         }
     }
 
-    validateForm() {
-        let isValid = true;
-        if (this.editIncomeElement.value) {
+    private validateForm():boolean {
+        let isValid: boolean = true;
+        if (this.editIncomeElement && this.editIncomeErrorElement && (this.editIncomeElement as HTMLInputElement).value) {
             this.editIncomeElement.classList.remove('is-invalid');
             this.editIncomeErrorElement.classList.replace('invalid-feedback', 'valid-feedback');
-        } else {
+        } else if (this.editIncomeElement && this.editIncomeErrorElement) {
             this.editIncomeElement.classList.add('is-invalid');
             this.editIncomeErrorElement.classList.replace('valid-feedback', 'invalid-feedback');
             isValid = false;
-        }
+            }
         return isValid;
     }
 
-    async updateIncome(e) {
+    private async updateIncome(e: { preventDefault: () => void; }):Promise<void> {
         e.preventDefault();
         if (this.validateForm()) {
 
             const result = await HttpUtils.request('/categories/income/' + this.id, 'PUT', true,{
-                title: this.editIncomeElement.value
+                title: (this.editIncomeElement as HTMLInputElement).value
             });
             if (result.redirect) {
                 return this.openNewRoute(result.redirect);

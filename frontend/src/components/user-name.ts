@@ -1,19 +1,22 @@
+import { UserInfoType } from "../types/user-info.type";
 import {AuthUtils} from "../ulits/auth-utils";
 
 export class UserName {
     constructor() {
         const userInfo = AuthUtils.getAuthInfo(AuthUtils.userInfoTokenKey);
-        if (userInfo) {
-            const parsedUserInfo = JSON.parse(userInfo);
-            const firstName = parsedUserInfo.name || '';
-            const lastName = parsedUserInfo.lastName || '';
-            const fullName = `
-            ${firstName} ${lastName}
-            `.trim();
-
-            const userNameElement = document.getElementById('userName');
-            if (userNameElement) {
-                userNameElement.textContent = fullName;
+        if (typeof userInfo === 'string') {
+            const parsedUserInfo: UserInfoType | null = JSON.parse(userInfo);
+            if (parsedUserInfo) {
+                const firstName:string = parsedUserInfo.name || '';
+                const lastName:string = parsedUserInfo.lastName || '';
+                const fullName:string = `
+                ${firstName} ${lastName}
+                `.trim();
+    
+                const userNameElement: HTMLElement | null = document.getElementById('userName');
+                if (userNameElement) {
+                    userNameElement.textContent = fullName;
+                } 
             }
         }
     }

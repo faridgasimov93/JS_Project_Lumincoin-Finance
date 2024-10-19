@@ -2,31 +2,55 @@ import Chart from "chart.js/auto";
 import { DatePickingUtil } from "../ulits/date-picking-util";
 import { HttpUtils } from "../ulits/http-utils";
 
+interface Operation {
+    id: number;
+    type: 'income' | 'expense';
+    amount: number;
+    category: string;
+    date: string;
+    comment?: string;
+}
+interface Operations {
+    category: string;
+    amount: number;
+}
+
 export class Main {
 
-    constructor(openNewRoute) {
-        this.openNewRoute = openNewRoute;
-        this.operations = []; // Сохраняем все операции для фильтрации
+    private openNewRoute: (url: string) => Promise<void>;
+    private operations: Operation[];
+    private incomeChart: HTMLCanvasElement | null;
+    private expensesChart: HTMLCanvasElement | null;
+    private incomeChartInstance: Chart | null;
+    private expensesChartInstance: Chart | null;
+    private incomeOperations: Operation[];
+    private expenseOperations: Operation[];
 
-        this.incomeChart = document.getElementById("incomeChart");
-        this.expensesChart = document.getElementById("expensesChart");
+    constructor(openNewRoute: (url: string) => Promise<void>) {
+        this.openNewRoute = openNewRoute;
+        this.operations = [];
+        this.incomeOperations = [];
+        this.expenseOperations = [];
+
+        this.incomeChart = document.getElementById("incomeChart") as HTMLCanvasElement | null;
+        this.expensesChart = document.getElementById("expensesChart") as HTMLCanvasElement | null;
 
         this.incomeChartInstance = null;
         this.expensesChartInstance = null;
 
         this.setDateFilterListeners();
 
-        DatePickingUtil.datePicking((startDate, endDate) => {
-            this.getOperations(startDate, endDate);
+        DatePickingUtil.datePicking(( startDate, endDate,) => {
+            this.getOperations(startDate, endDate,);
         });
 
-        const today = new Date();
+        const today: Date = new Date();
         this.getOperations(today, today);
 
     }
 
-    async getOperations(startDate, endDate, customUrl) {
-        const result = await HttpUtils.request(
+    private async getOperations(startDate?: Date, endDate?: Date, customUrl: string | null = null):Promise<void> {
+        const result:any = await HttpUtils.request(
             customUrl ??
             `/operations?period=interval&dateFrom=${startDate}&dateTo=${endDate}`
         );
@@ -53,8 +77,8 @@ export class Main {
         this.expensePieChart();
     }
 
-    groupByCategory(operations) {
-        return operations.reduce((acc, op) => {
+    private groupByCategory(operations:Operations[]):{[key:string]:number} {
+        return operations.reduce((acc: { [key: string]: number }, op: Operations) => {
             if (!acc[op.category]) {
                 acc[op.category] = 0;
             }
@@ -63,28 +87,26 @@ export class Main {
         }, {});
     }
 
-    getRandomColor() {
-        // динамическая генерация цветов
+    private getRandomColor():string {
         const r = Math.floor(Math.random() * 255);
         const g = Math.floor(Math.random() * 255);
         const b = Math.floor(Math.random() * 255);
         return `rgb(${r}, ${g}, ${b})`;
     }
 
-    generateColors(labels) {
+    private generateColors(labels: (string | number)[]): string[] {
         return labels.map(() => this.getRandomColor());
     }
 
-    incomePieChart() {
-        const incomeByCategory = this.groupByCategory(this.incomeOperations);
-        const incomeLabels = Object.keys(incomeByCategory);
-        const incomeData = Object.values(incomeByCategory);
-        const backgroundColors = this.generateColors(incomeLabels);
+    private incomePieChart():void {
+        const incomeByCategory: {[key: string]: number} = this.groupByCategory(this.incomeOperations);
+        const incomeLabels:string[] = Object.keys(incomeByCategory);
+        const incomeData:number[] = Object.values(incomeByCategory);
+        const backgroundColors:string[] = this.generateColors(incomeLabels);
 
         const legendMargin = {
             id: "legendMargin",
-            beforeInit(chart) {
-                // console.log(chart.legend.fit);
+            beforeInit(chart: { legend: { height: number; fit: () => any; }; }) {
                 const fitValue = chart.legend.fit;
                 chart.legend.fit = function fit() {
                     fitValue.bind(chart.legend)();
@@ -93,7 +115,7 @@ export class Main {
             },
         };
 
-        const data = {
+        const data:any = {
             labels: incomeLabels,
             options: {
                 scales: {
@@ -112,7 +134,7 @@ export class Main {
             ],
         };
 
-        let config = {
+        let config: any = {
             type: "pie",
             data: data,
             options: {
@@ -132,24 +154,26 @@ export class Main {
             plugins: [legendMargin],
         };
 
-        if (this.incomeChartInstance) {
-            this.incomeChartInstance.data = data;
-            this.incomeChartInstance.update();
-        } else {
-            this.incomeChartInstance = new Chart(this.incomeChart, config);
+        if (this.incomeChart) {
+            if (this.incomeChartInstance) {
+                this.incomeChartInstance.data = data;
+                this.incomeChartInstance.update();
+            } else {
+                this.incomeChartInstance = new Chart(this.incomeChart, config);
+            } 
         }
     }
 
-    expensePieChart() {
-        const expenseByCategory = this.groupByCategory(this.expenseOperations);
-        const expenseLabels = Object.keys(expenseByCategory);
-        const expenseData = Object.values(expenseByCategory);
+    private expensePieChart():void {
+        const expenseByCategory: {[key: string]: number} = this.groupByCategory(this.expenseOperations);
+        const expenseLabels:string[] = Object.keys(expenseByCategory);
+        const expenseData:number[] = Object.values(expenseByCategory);
 
-        const backgroundColors = this.generateColors(expenseLabels);
+        const backgroundColors:string[] = this.generateColors(expenseLabels);
 
-        const legendMargin = {
+        const legendMargin:any = {
             id: "legendMargin",
-            beforeInit(chart) {
+            beforeInit(chart: { legend: { height: number; fit: () => any; }; }) {
                 // console.log(chart.legend.fit);
                 const fitValue = chart.legend.fit;
                 chart.legend.fit = function fit() {
@@ -159,7 +183,7 @@ export class Main {
             },
         };
 
-        const data = {
+        const data:any = {
             labels: expenseLabels,
             options: {
                 scales: {
@@ -178,7 +202,7 @@ export class Main {
             ],
         };
 
-        let config = {
+        let config: any = {
             type: "pie",
             data: data,
             options: {
@@ -198,43 +222,62 @@ export class Main {
             plugins: [legendMargin],
         };
 
-        if (this.expensesChartInstance) {
-            this.expensesChartInstance.data = data;
-            this.expensesChartInstance.update();
-        } else {
-            this.expensesChartInstance = new Chart(this.expensesChart, config);
+        if (this.expensesChart) {
+            if (this.expensesChartInstance) {
+                this.expensesChartInstance.data = data;
+                this.expensesChartInstance.update();
+            } else {
+                this.expensesChartInstance = new Chart(this.expensesChart, config);
+            }
         }
+        
     }
 
-    setDateFilterListeners() {
-        document.querySelector("#todayBtn").addEventListener("click", () => {
-            const today = new Date();
-            this.getOperations(today, today);
-        });
-
-        document.querySelector("#weekBtn").addEventListener("click", () => {
-            const today = new Date();
-            const weekAgo = new Date(today);
-            weekAgo.setDate(today.getDate() - 7);
-            this.getOperations(weekAgo, today);
-        });
-
-        document.querySelector("#monthBtn").addEventListener("click", () => {
-            const today = new Date();
-            const monthAgo = new Date(today);
-            monthAgo.setMonth(today.getMonth() - 1);
-            this.getOperations(monthAgo, today);
-        });
-
-        document.querySelector("#yearBtn").addEventListener("click", () => {
-            const today = new Date();
-            const yearAgo = new Date(today);
-            yearAgo.setFullYear(today.getFullYear() - 1);
-            this.getOperations(yearAgo, today);
-        });
-
-        document.querySelector("#allBtn").addEventListener("click", () => {
-            this.getOperations(undefined, undefined, `/operations?period=all`);
-        });
+    private setDateFilterListeners():void {
+        const todayButton: HTMLElement | null = document.querySelector("#todayBtn");
+        if (todayButton) {
+            todayButton.addEventListener("click", () => {
+                const today = new Date();
+                this.getOperations(today, today);
+            });
+        }
+        
+        const weekButton: Element | null = document.querySelector("#weekBtn");
+        if (weekButton) {
+            weekButton.addEventListener("click", () => {
+                const today = new Date();
+                const weekAgo = new Date(today);
+                weekAgo.setDate(today.getDate() - 7);
+                this.getOperations(weekAgo, today);
+            });
+        }
+        
+        const monthButton: Element | null = document.querySelector("#monthBtn");
+        if (monthButton) {
+            monthButton.addEventListener("click", () => {
+                const today = new Date();
+                const monthAgo = new Date(today);
+                monthAgo.setMonth(today.getMonth() - 1);
+                this.getOperations(monthAgo, today);
+            });
+        }
+        
+        const yearButton: Element | null = document.querySelector("#yearBtn");
+        if (yearButton) {
+            yearButton.addEventListener("click", () => {
+                const today = new Date();
+                const yearAgo = new Date(today);
+                yearAgo.setFullYear(today.getFullYear() - 1);
+                this.getOperations(yearAgo, today);
+            });  
+        }
+        
+        const allButton: Element | null = document.querySelector("#allBtn");
+        if (allButton) {
+            allButton.addEventListener("click", () => {
+                this.getOperations(undefined, undefined, `/operations?period=all`);
+            });
+        }
+        
     }
 }

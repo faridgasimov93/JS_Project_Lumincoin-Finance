@@ -14,9 +14,14 @@ import {Logout} from "./components/auth/logout";
 import {AuthCheckUtils} from "./ulits/auth-check-utils";
 import {Balance} from "./components/balance";
 import {UserName} from "./components/user-name";
+import { RouteType } from "./types/route.type";
 
 
 export class Router {
+
+    readonly titlePageElement: HTMLElement | null;
+    readonly contentPageElement: HTMLElement | null;
+    private routes: RouteType[];
 
     constructor() {
 
@@ -200,7 +205,7 @@ export class Router {
 
     }
 
-    initEvents() {
+    private initEvents():void {
         // Вызывается при первом запуске или обновлении страницы
         window.addEventListener('DOMContentLoaded', this.activateRoute.bind(this));
         // Вызывается когда меняется url ( переход с одной страницы на другую )
@@ -209,26 +214,26 @@ export class Router {
         document.addEventListener('click', this.clickHandler.bind(this));
     }
 
-    async openNewRoute(url) {
+    public async openNewRoute(url:string):Promise<void> {
         const currentRoute = window.location.pathname;
         history.pushState({}, '', url);
         await this.activateRoute();
     }
 
-    async clickHandler(event) {
-        let element = null;
+    private async clickHandler(event:any): Promise<void> {
+        let element:HTMLAnchorElement | null = null;
 
         if (event.target.nodeName === 'A') {
-            element = event.target;
+            element = event.target as HTMLAnchorElement;
         } else if (event.target.parentNode.nodeName === 'A') {
-            element = event.target.parentNode;
+            element = event.target.parentNode as HTMLAnchorElement;
         }
         if (element) {
             event.preventDefault();
 
-            const currentRoute = window.location.pathname;
+            const currentRoute: string = window.location.pathname;
 
-            const url = element.href.replace(window.location.origin, '');
+            const url: string = element.href.replace(window.location.origin, '');
             if (!url || (currentRoute === url.replace('#', '')) || url.startsWith('javascript:void(0)')) {
                 return;
             }
@@ -237,22 +242,25 @@ export class Router {
         }
     }
 
-    async activateRoute() {
+    public async activateRoute(): Promise<void> {
 
-        const urlRoute = window.location.pathname;
-        const newRoute = this.routes.find(item => item.route === urlRoute);
+        const urlRoute: string = window.location.pathname;
+        const newRoute: RouteType | undefined = this.routes.find(item => item.route === urlRoute);
 
         if (newRoute) {
-            if (newRoute.title) {
+            if (newRoute.title && this.titlePageElement) {
                 this.titlePageElement.innerText = newRoute.title + ' | Lumincoin Finance';
             }
             if (newRoute.filePathTemplate) {
-                let contentBlock = this.contentPageElement;
-                if (newRoute.useLayout) {
+                let contentBlock: HTMLElement | null = this.contentPageElement;
+                if (typeof newRoute.useLayout === "string" && this.contentPageElement) {
                     this.contentPageElement.innerHTML = await fetch(newRoute.useLayout).then(response => response.text());
                     contentBlock = document.getElementById('content-layout');
                 }
-                contentBlock.innerHTML = await fetch(newRoute.filePathTemplate).then(response => response.text());
+                if (contentBlock) {
+                    contentBlock.innerHTML = await fetch(newRoute.filePathTemplate).then(response => response.text());
+                }
+                
             }
 
             // Проверяем что  функция load  не пустая и что она является функцией. Если да то вызываем
@@ -265,13 +273,18 @@ export class Router {
             history.pushState({}, '', '/404');
             await this.activateRoute();
         }
-        const menuToggle = document.getElementById('menu-toggle');
+        const menuToggle: HTMLElement | null = document.getElementById('menu-toggle');
         if (menuToggle) {
             menuToggle.addEventListener('click', function () {
                 const sidebar = document.querySelector('.custom-sidebar');
                 const menuButton = document.querySelector('.menu-toggle');
-                sidebar.classList.toggle('show-sidebar');
-                menuButton.classList.toggle('show-sidebar');
+                if (sidebar) {
+                    sidebar.classList.toggle('show-sidebar');
+                }
+                if (menuButton) {
+                    menuButton.classList.toggle('show-sidebar');
+                }
+                
             });
         }
     }

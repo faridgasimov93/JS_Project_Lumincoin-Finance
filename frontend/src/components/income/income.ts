@@ -1,18 +1,28 @@
 import {HttpUtils} from "../../ulits/http-utils";
+import bootstrap from "bootstrap";
 
 export class Income {
-    constructor(openNewRoute) {
+
+    private openNewRoute: (url: string) => Promise<void>;
+    private selectedIncomeId: string | null;
+    private selectedIncomeTitle: string | null;
+    declare bootstrap: any;
+
+    constructor(openNewRoute: (url: string)=> Promise<void>) {
 
         this.openNewRoute = openNewRoute;
         this.selectedIncomeId = null;
         this.selectedIncomeTitle = null;
 
-        this.getIncomes().then();
-        document.getElementById('deleteButton').addEventListener('click', this.deleteIncome.bind(this));
+        this.getIncomes();
+        const deleteButton: HTMLElement | null = document.getElementById('deleteButton')
+        if (deleteButton) {
+            deleteButton.addEventListener('click', this.deleteIncome.bind(this));
+        }
     }
 
-    async getIncomes() {
-        const result = await HttpUtils.request('/categories/income');
+    private async getIncomes(): Promise<void> {
+        const result:any = await HttpUtils.request('/categories/income');
         if (result.redirect) {
             return this.openNewRoute(result.redirect);
         }
@@ -24,50 +34,54 @@ export class Income {
         this.showRecords(result.response);
     }
 
-    showRecords(income) {
-        const container = document.getElementById('category-container');
-        const createButton = document.getElementById('addNew');
+    private showRecords(income:{ id: string, title: string }[]):void {
+        const container: HTMLElement | null = document.getElementById('category-container');
+        const createButton: HTMLElement | null = document.getElementById('addNew');
 
         income.forEach(item => {
             // создание блока карточки
-            const categoryBlock = document.createElement('div');
+            const categoryBlock: HTMLElement | null = document.createElement('div');
             categoryBlock.classList.add('category-block');
             // создание заголовка карточки и подставляет название
-            const blockTitle = document.createElement('div');
+            const blockTitle: HTMLElement | null = document.createElement('div');
             blockTitle.classList.add('block-title');
             blockTitle.innerText = item.title;
 
             // создание кнопок
-            const categoryActions = document.createElement('div');
+            const categoryActions: HTMLElement | null = document.createElement('div');
             categoryActions.classList.add('category-actions');
             categoryActions.innerHTML = `
             <a href="/income-edit?id=${item.id}" class="btn btn-primary me-2">Редактировать</a>
             <a href="#" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="${item.id}">Удалить</a>
             `
 
-            categoryActions.querySelector('.btn-danger').addEventListener('click', (e) => {
-                this.selectedIncomeId = item.id; // Сохраняет ID и название расхода для удаления и замены текста
-                this.selectedIncomeTitle = item.title;
-                this.updateModalText();
-            });
-
+            const dangerButton: HTMLElement | null = categoryActions.querySelector('.btn-danger');
+            if (dangerButton) {
+                dangerButton.addEventListener('click', (e) => {
+                    this.selectedIncomeId = item.id; // Сохраняет ID и название расхода для удаления и замены текста
+                    this.selectedIncomeTitle = item.title;
+                    this.updateModalText();
+                });
+            }
             categoryBlock.appendChild(blockTitle);
             categoryBlock.appendChild(categoryActions);
-
-            container.appendChild(categoryBlock);
+            if (container) {
+                container.appendChild(categoryBlock);
+            }
         });
-        // вставляет карточку для создания после того как вставит все карточки  Расходов
-        container.appendChild(createButton);
+        if (container && createButton) {
+            container.appendChild(createButton);
+        }
     }
 
-    updateModalText() {
-        const modalTitleElement = document.getElementById('deleteModalLabel');
+    private updateModalText():void {
+        const modalTitleElement:HTMLElement | null = document.getElementById('deleteModalLabel');
         if (modalTitleElement && this.selectedIncomeTitle) {
             modalTitleElement.innerText = `Вы действительно хотите удалить категорию "${this.selectedIncomeTitle}"?`;
         }
     }
 
-    async deleteIncome() {
+   private async deleteIncome():Promise<void> {
         if (this.selectedIncomeId) {
             const result = await HttpUtils.request('/categories/income/' + this.selectedIncomeId, 'DELETE', true);
 
@@ -79,15 +93,18 @@ export class Income {
                 return alert("Возникла ошибка при удалении дохода! Обратитесь в поддержку.");
             }
 
-            const incomeBlock = document.querySelector(`.category-block[data-id="${this.selectedIncomeId}"]`);
+            const incomeBlock:HTMLElement | null = document.querySelector(`.category-block[data-id="${this.selectedIncomeId}"]`);
             if (incomeBlock) {
                 incomeBlock.remove();
             }
 
-            const deleteModal = document.getElementById('deleteModal');
-            const modalInstance = bootstrap.Modal.getInstance(deleteModal);
-            modalInstance.hide();
-
+            const deleteModal:HTMLElement | null = document.getElementById('deleteModal');
+            if (deleteModal) {
+                 const modalInstance: bootstrap.Modal | null = bootstrap.Modal.getInstance(deleteModal);
+                if (modalInstance) {
+                  modalInstance.hide();
+                }
+            }
             this.openNewRoute('/income');
 
         }

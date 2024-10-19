@@ -1,18 +1,29 @@
 import {HttpUtils} from "../../ulits/http-utils";
+import * as bootstrap from 'bootstrap';
 
 export class Expenses {
-    constructor(openNewRoute) {
+
+    private openNewRoute: (url: string) => Promise<void>;
+    private selectedExpenseId: string | null;
+    private selectedExpenseTitle: string | null;
+    declare bootstrap: any;
+
+    constructor(openNewRoute: (url: string) => Promise<void>) {
 
         this.openNewRoute = openNewRoute;
         this.selectedExpenseId = null;
         this.selectedExpenseTitle = null;
 
-        this.getExpenses().then();
-        document.getElementById('deleteButton').addEventListener('click', this.deleteExpense.bind(this));
+        this.getExpenses();
+        const deleteButton: HTMLElement | null = document.getElementById('deleteButton')
+        if (deleteButton) {
+        deleteButton.addEventListener('click', this.deleteExpense.bind(this));
+            
+        }
     }
 
-    async getExpenses() {
-        const result = await HttpUtils.request('/categories/expense');
+    private async getExpenses():Promise<void> {
+        const result: any = await HttpUtils.request('/categories/expense');
         if (result.redirect) {
             return this.openNewRoute(result.redirect);
         }
@@ -25,22 +36,22 @@ export class Expenses {
 
     }
 
-    showRecords(expenses) {
+    private showRecords(expenses:{ id: string, title: string }[]):void {
 
-        const container = document.getElementById('category-container');
-        const createButton = document.getElementById('addNew');
+        const container: HTMLElement | null = document.getElementById('category-container');
+        const createButton: HTMLElement | null= document.getElementById('addNew');
 
         expenses.forEach(expense => {
             // создание блока карточки
-            const categoryBlock = document.createElement('div');
+            const categoryBlock: HTMLElement | null = document.createElement('div');
             categoryBlock.classList.add('category-block');
             // создание заголовка карточки и подставляет название
-            const blockTitle = document.createElement('div');
+            const blockTitle: HTMLElement | null = document.createElement('div');
             blockTitle.classList.add('block-title');
             blockTitle.innerText = expense.title;
 
             // создание кнопок
-            const categoryActions = document.createElement('div');
+            const categoryActions: HTMLElement | null = document.createElement('div');
             categoryActions.classList.add('category-actions');
             categoryActions.innerHTML = `
             <a href="/expenses-edit?id=${expense.id}" class="btn btn-primary me-2">Редактировать</a>
@@ -48,31 +59,37 @@ export class Expenses {
             `
 
             // Сохраняет ID при клике на кнопку "Удалить"
-            categoryActions.querySelector('.btn-danger').addEventListener('click', (e) => {
-                this.selectedExpenseId = expense.id; // Сохраняет ID и название расхода для удаления и замены текста
-                this.selectedExpenseTitle = expense.title;
-                this.updateModalText();
-            });
-
+            const dangerButton: HTMLElement | null = categoryActions.querySelector('.btn-danger');
+            if (dangerButton) {
+                dangerButton.addEventListener('click', (e) => {
+                    this.selectedExpenseId = expense.id; // Сохраняет ID и название расхода для удаления и замены текста
+                    this.selectedExpenseTitle = expense.title;
+                    this.updateModalText();
+                }); 
+            }
             categoryBlock.appendChild(blockTitle);
             categoryBlock.appendChild(categoryActions);
-
-            container.appendChild(categoryBlock);
+            if (container) {
+                container.appendChild(categoryBlock);
+            }
+            
         });
-        // вставляет карточку для создания после того как вставит все карточки Расходов
-        container.appendChild(createButton);
+        if (container && createButton) {
+            container.appendChild(createButton); 
+        }
+        
     }
 
-    updateModalText() {
-        const modalTitleElement = document.getElementById('deleteModalLabel');
+    private updateModalText():void {
+        const modalTitleElement: HTMLElement | null = document.getElementById('deleteModalLabel');
         if (modalTitleElement && this.selectedExpenseTitle) {
             modalTitleElement.innerText = `Вы действительно хотите удалить категорию "${this.selectedExpenseTitle}"?`;
         }
     }
 
-    async deleteExpense() {
+    private async deleteExpense(): Promise<void> {
         if (this.selectedExpenseId) {
-            const result = await HttpUtils.request('/categories/expense/' + this.selectedExpenseId, 'DELETE', true);
+            const result:any = await HttpUtils.request('/categories/expense/' + this.selectedExpenseId, 'DELETE', true);
 
             if (result.redirect) {
                 return this.openNewRoute(result.redirect);
@@ -82,13 +99,18 @@ export class Expenses {
                 return alert("Возникла ошибка при удалении расхода! Обратитесь в поддержку.");
             }
 
-            const expenseBlock = document.querySelector(`.category-block[data-id="${this.selectedExpenseId}"]`);
+            const expenseBlock: HTMLElement | null = document.querySelector(`.category-block[data-id="${this.selectedExpenseId}"]`);
             if (expenseBlock) {
                 expenseBlock.remove();
             }
-            const deleteModal = document.getElementById('deleteModal');
-            const modalInstance = bootstrap.Modal.getInstance(deleteModal);
-            modalInstance.hide();
+            const deleteModal:HTMLElement | null = document.getElementById('deleteModal');
+            if (deleteModal) {
+                const modalInstance = bootstrap.Modal.getInstance(deleteModal);
+                if (modalInstance) {
+                    modalInstance.hide();
+                }
+            }
+            
 
             this.openNewRoute('/expenses');
         }

@@ -1,13 +1,31 @@
+import { callback } from "chart.js/dist/helpers/helpers.core";
 import {DatePickingUtil} from "../../ulits/date-picking-util";
 import {HttpUtils} from "../../ulits/http-utils";
 
 
+interface Category {
+    id: number;
+    title: string;
+}
+
 export class IncomeAndExpensesCreate {
 
-    constructor(openNewRoute) {
+    private openNewRoute: (url: string) => Promise<void>;
+    private incomeExpenseSelector: HTMLElement | null;
+    private operationCategorySelect: HTMLElement | null;
+    private operationCategorySelectError: HTMLElement | null;
+    private operationAmountInput: HTMLElement | null;
+    private operationAmountErrorInput: HTMLElement | null;
+    private operationDatepickerInput: HTMLElement | null;
+    private operationDatepickerErrorInput: HTMLElement | null;
+    private operationCommentaryInput: HTMLElement | null;
+    private operationCommentaryErrorInput: HTMLElement | null;
+    private categoriesMap: { [key: string]: number };
+
+    constructor(openNewRoute: (url: string)=> Promise<void>) {
         this.openNewRoute = openNewRoute;
 
-        DatePickingUtil.datePicking();
+        DatePickingUtil.datePicking(callback);
 
         this.incomeExpenseSelector = document.getElementById('operationSelector');
 
@@ -26,47 +44,54 @@ export class IncomeAndExpensesCreate {
         this.categoriesMap = {}; //объект для хранения категорий по именам и ID
 
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const operationType = urlParams.get('type');
+        const urlParams: URLSearchParams = new URLSearchParams(window.location.search);
+        const operationType: string | null = urlParams.get('type');
         if (operationType === 'income') {
-            this.incomeExpenseSelector.value = '1';
+            (this.incomeExpenseSelector as HTMLInputElement).value = '1';
         } else if (operationType === 'expense') {
-            this.incomeExpenseSelector.value = '2';
+            (this.incomeExpenseSelector as HTMLInputElement).value = '2';
         }
 
-        this.incomeExpenseSelector.addEventListener('change', this.updateOperationCategories.bind(this));
+        if (this.incomeExpenseSelector) {
+            this.incomeExpenseSelector.addEventListener('change', this.updateOperationCategories.bind(this));
+        }
         this.updateOperationCategories().then();
-        document.getElementById('createButton').addEventListener('click', this.createNewOperation.bind(this));
+        const createButton = document.getElementById('createButton');
+        if (createButton) {
+        createButton.addEventListener('click', this.createNewOperation.bind(this));
+        }
     }
 
-    async updateOperationCategories() {
-        const selectedValue = this.incomeExpenseSelector.value;
-
+    private async updateOperationCategories():Promise<void> {
+        const selectedValue: string | null = (this.incomeExpenseSelector as HTMLSelectElement).value;
         // В зависимости от выбранного значения, выбираются категории
-        let url = selectedValue === "1" ? '/categories/income' : '/categories/expense';
+        let url:string = selectedValue === "1" ? '/categories/income' : '/categories/expense';
 
-        const result = await HttpUtils.request(url);
+        const result: { response: Category[]; error?: string } = await HttpUtils.request(url);
         if (result.error || !result.response) {
             alert("Ошибка загрузки категорий!");
             return;
         }
+        if (this.operationCategorySelect) {
         this.operationCategorySelect.innerHTML = '<option value="">Выберите категорию</option>';
         this.categoriesMap = {};
 
         result.response.forEach(item => {
-            const option = document.createElement('option');
+            const option:HTMLElement | null = document.createElement('option');
 
-            option.value = item.title; // сохраняет названия категорий
+            (option as HTMLInputElement).value = item.title; // сохраняет названия категорий
             option.textContent = item.title; // отображает названия категорий
-
-            this.categoriesMap[item.title] = item.id; // мапит title в ID
+            if (this.categoriesMap) {
+                this.categoriesMap[(item).title] = item.id; // мапит title в ID
+            }
+            if (this.operationCategorySelect) {
             this.operationCategorySelect.appendChild(option);
-
+            }
         });
+        }
     }
-
     // Функция для конвертации формата даты
-     convertToBackendFormat(dateStr) {
+     private convertToBackendFormat(dateStr: string): string {
         // Ожидаемый формат: DD.MM.YYYY
         const [day, month, year] = dateStr.split(".");
 
@@ -74,62 +99,72 @@ export class IncomeAndExpensesCreate {
         return `${year}-${month}-${day}`;
     }
 
-    validateForm() {
-        let isValid = true;
+    private validateForm():boolean {
+        let isValid:boolean = true;
 
-        if (this.operationCategorySelect.value) {
-            this.operationCategorySelect.classList.remove('is-invalid');
-            this.operationCategorySelectError.classList.replace('invalid-feedback', 'valid-feedback');
-        } else {
-            this.operationCategorySelect.classList.add('is-invalid');
-            this.operationCategorySelectError.classList.replace('valid-feedback', 'invalid-feedback');
-            isValid = false;
+        if (this.operationCategorySelect && this.operationCategorySelectError) {
+            if ((this.operationCategorySelect as HTMLInputElement).value) {
+                this.operationCategorySelect.classList.remove('is-invalid');
+                this.operationCategorySelectError.classList.replace('invalid-feedback', 'valid-feedback');
+            } else {
+                this.operationCategorySelect.classList.add('is-invalid');
+                this.operationCategorySelectError.classList.replace('valid-feedback', 'invalid-feedback');
+                isValid = false;
+            }
         }
+        
 
-        if (this.operationAmountInput.value) {
-            this.operationAmountInput.classList.remove('is-invalid');
-            this.operationAmountErrorInput.classList.replace('invalid-feedback', 'valid-feedback');
-        } else {
-            this.operationAmountInput.classList.add('is-invalid');
-            this.operationAmountErrorInput.classList.replace('valid-feedback', 'invalid-feedback');
-            isValid = false;
+        if (this.operationAmountInput && this.operationAmountErrorInput) {
+            if ((this.operationAmountInput as HTMLInputElement).value) {
+                this.operationAmountInput.classList.remove('is-invalid');
+                this.operationAmountErrorInput.classList.replace('invalid-feedback', 'valid-feedback');
+            } else {
+                this.operationAmountInput.classList.add('is-invalid');
+                this.operationAmountErrorInput.classList.replace('valid-feedback', 'invalid-feedback');
+                isValid = false;
+            }
         }
-
-        if (this.operationDatepickerInput.value) {
-            this.operationDatepickerInput.classList.remove('is-invalid');
-            this.operationDatepickerErrorInput.classList.replace('invalid-feedback', 'valid-feedback');
-        } else {
-            this.operationDatepickerInput.classList.add('is-invalid');
-            this.operationDatepickerErrorInput.classList.replace('valid-feedback', 'invalid-feedback');
-            isValid = false;
+        
+        if (this.operationDatepickerInput && this.operationDatepickerErrorInput) {
+            if ((this.operationDatepickerInput as HTMLInputElement).value) {
+                this.operationDatepickerInput.classList.remove('is-invalid');
+                this.operationDatepickerErrorInput.classList.replace('invalid-feedback', 'valid-feedback');
+            } else {
+                this.operationDatepickerInput.classList.add('is-invalid');
+                this.operationDatepickerErrorInput.classList.replace('valid-feedback', 'invalid-feedback');
+                isValid = false;
+            }
         }
-        if (this.operationCommentaryInput.value) {
-            this.operationCommentaryInput.classList.remove('is-invalid');
-            this.operationCommentaryErrorInput.classList.replace('invalid-feedback', 'valid-feedback');
-        } else {
-            this.operationCommentaryInput.classList.add('is-invalid');
-            this.operationCommentaryErrorInput.classList.replace('valid-feedback', 'invalid-feedback');
-            isValid = false;
+        if (this.operationCommentaryInput && this.operationCommentaryErrorInput) {
+            if ((this.operationCommentaryInput as HTMLInputElement).value) {
+                this.operationCommentaryInput.classList.remove('is-invalid');
+                this.operationCommentaryErrorInput.classList.replace('invalid-feedback', 'valid-feedback');
+            } else {
+                this.operationCommentaryInput.classList.add('is-invalid');
+                this.operationCommentaryErrorInput.classList.replace('valid-feedback', 'invalid-feedback');
+                isValid = false;
+            }
         }
+        
 
         return isValid;
     }
 
-    async createNewOperation(e) {
+    private async createNewOperation(e: { preventDefault: () => void; }):Promise<void> {
         e.preventDefault();
 
         if (this.validateForm()) {
 
-            const operationType = this.incomeExpenseSelector.value === "1" ? "income" : "expense";
-            const formattedDate = this.convertToBackendFormat(this.operationDatepickerInput.value);
-            const categoryTitle = this.operationCategorySelect.value;
-            const categoryId = this.categoriesMap[categoryTitle]; // Сохраняет ID выбранной категории
+            const operationType: string = (this.incomeExpenseSelector as HTMLSelectElement).value === "1" ? "income" : "expense";
+            const formattedDate: string = this.convertToBackendFormat((this.operationDatepickerInput as HTMLInputElement).value);
+            const categoryTitle: string | null = (this.operationCategorySelect as HTMLSelectElement).value;
+            const categoryId: number | null = this.categoriesMap[categoryTitle]; // Сохраняет ID выбранной категории
 
-            const result = await HttpUtils.request('/operations', 'POST', true,{
+            const result:any = await HttpUtils.request('/operations', 'POST', true,{
                 type: operationType,
-                amount: this.operationAmountInput.value,
+                amount: (this.operationAmountInput as HTMLInputElement).value,
                 date: formattedDate,
-                comment: this.operationCommentaryInput.value,
+                comment: (this.operationCommentaryInput as HTMLInputElement).value,
                 category_id: categoryId ,
             });
             if (result.redirect) {

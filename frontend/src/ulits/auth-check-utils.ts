@@ -1,15 +1,16 @@
 import {AuthUtils} from "./auth-utils";
 
 export class AuthCheckUtils {
+    private openNewRoute: (route: string) => void;
 
-    constructor(openNewRoute) {
+    constructor(openNewRoute:(route: string) => void) {
 
         this.openNewRoute = openNewRoute;
 
     }
 
-    checkAndRedirect() {
-        const accessToken = AuthUtils.getAuthInfo(AuthUtils.accessTokenKey);
+    public checkAndRedirect():boolean {
+        const accessToken: string | object | null = AuthUtils.getAuthInfo(AuthUtils.accessTokenKey);
         if (!accessToken) {
             this.openNewRoute('/login');
             return false;

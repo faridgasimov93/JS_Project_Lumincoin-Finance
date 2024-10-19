@@ -1,15 +1,16 @@
 import config from "../config/config";
+import { RequestResultType } from "../types/request-result.type";
 import {AuthUtils} from "./auth-utils";
 
 export class HttpUtils {
-    static async request(url, method = 'GET', useAuth = true, body = null) {
+     public static async request(url:string, method:string = 'GET', useAuth:boolean = true, body:any | null = null):Promise<any> {
 
-        const result = {
+        const result: RequestResultType = {
             error: false,
             response: null
         };
 
-        const params = {
+        const params:any = {
             method: method,
             headers: {
                 'Content-type': 'application/json',
@@ -17,12 +18,17 @@ export class HttpUtils {
             },
         }
 
-        let token = null;
-        if (useAuth) {
-            token = AuthUtils.getAuthInfo(AuthUtils.accessTokenKey);
-            if (token) {
-                params.headers['x-auth-token'] = token;
-            }
+        let tokenData = AuthUtils.getAuthInfo(AuthUtils.accessTokenKey);
+        let token: string | null = null;
+        
+        if (typeof tokenData === 'string') {
+            token = tokenData;
+        } else if (tokenData && typeof tokenData === 'object') {
+            token = tokenData[AuthUtils.accessTokenKey] || null;
+        }
+
+        if (useAuth && token) {
+            (params.headers['x-auth-token']) = token;
         }
 
         if (body) {

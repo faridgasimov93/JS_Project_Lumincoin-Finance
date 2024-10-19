@@ -1,13 +1,14 @@
 import config from "../config/config";
+import { UserInfoType } from "../types/user-info.type";
 
 export class AuthUtils {
-    static accessTokenKey = "accessToken";
-    static refreshTokenKey = "refreshToken";
-    static userInfoTokenKey = "userInfo";
+    public static accessTokenKey: string = "accessToken";
+    public static refreshTokenKey: string = "refreshToken";
+    public static userInfoTokenKey: string = "userInfo";
 
-    static refreshPromise = null;
+    static refreshPromise: Promise<boolean> | null = null;
 
-    static setAuthInfo(accessToken, refreshToken, userInfo = null) {
+    public static setAuthInfo(accessToken:string, refreshToken:string, userInfo:UserInfoType | null = null):void {
         localStorage.setItem(this.accessTokenKey, accessToken);
         localStorage.setItem(this.refreshTokenKey, refreshToken);
         if (userInfo) {
@@ -15,20 +16,14 @@ export class AuthUtils {
         }
     }
 
-    static deleteAuthInfo() {
+    public static deleteAuthInfo():void {
         localStorage.removeItem(this.accessTokenKey);
         localStorage.removeItem(this.refreshTokenKey);
         localStorage.removeItem(this.userInfoTokenKey);
     }
 
-    static getAuthInfo(key = null) {
-        if (
-            key &&
-            [
-                this.accessTokenKey,
-                this.refreshTokenKey,
-                this.userInfoTokenKey,
-            ].includes(key)
+    public static getAuthInfo(key: string | undefined): string | { [x: string]: string | null } | null {
+        if (key &&[this.accessTokenKey,this.refreshTokenKey,this.userInfoTokenKey].includes(key)
         ) {
             return localStorage.getItem(key);
         } else {
@@ -40,11 +35,11 @@ export class AuthUtils {
         }
     }
 
-    static async updateRefreshToken() {
+    public static async updateRefreshToken():Promise<boolean>  {
         if (!this.refreshPromise) {
-            this.refreshPromise = (async () => {
-                let result = false;
-                const refreshToken = this.getAuthInfo(this.refreshTokenKey);
+            this.refreshPromise = (async ():Promise<boolean> => {
+                let result:boolean = false;
+                const refreshToken: string | { [x: string]: string | null; } | null = this.getAuthInfo(this.refreshTokenKey);
                 if (refreshToken) {
                     const response = await fetch(config.api + "/refresh", {
                         method: "POST",

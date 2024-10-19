@@ -1,9 +1,26 @@
 import {DatePickingUtil} from "../../ulits/date-picking-util";
 import {HttpUtils} from "../../ulits/http-utils";
+import { FilteredOperationsType } from "../../types/filtered-operations.type";
+import { callback } from "chart.js/dist/helpers/helpers.core";
 
+
+
+interface Operation {
+    id: number;
+    type: 'income' | 'expenses';
+    category: string;
+    amount: number;
+    date: string;
+    comment?: string;
+}
 export class IncomeAndExpenses {
 
-    constructor(openNewRoute) {
+    private openNewRoute: (url: string) => Promise<void>;
+    private allOperations: FilteredOperationsType[] = [];
+    private filteredOperations: FilteredOperationsType[] = [];
+    private operationToDelete: string | null;
+
+    constructor(openNewRoute: (url: string)=> Promise<void>) {
 
         this.openNewRoute = openNewRoute;
         this.allOperations = []; // Сохраняем все операции для фильтрации
@@ -12,14 +29,14 @@ export class IncomeAndExpenses {
 
         this.setDateFilterListeners(); // Устанавливаем обработчики для фильтров даты
 
-        DatePickingUtil.datePicking();
-        this.getOperations().then();
+        DatePickingUtil.datePicking(callback);
+        this.getOperations();
         this.filterOperations();
-        this.setModalListeners().then();
+        this.setModalListeners();
     }
 
-    async getOperations() {
-        const result = await HttpUtils.request('/operations?period=all');
+    private async getOperations(): Promise<void> {
+        const result:any = await HttpUtils.request('/operations?period=all');
         // console.log(result.response);
 
         if (result.redirect) {
@@ -35,9 +52,9 @@ export class IncomeAndExpenses {
         this.filterOperations();
     }
 
-    filterOperations(startDate = null, endDate = null) {
-        const today = new Date();
-        let filtered = [];
+    private filterOperations(startDate: Date | null = null, endDate: Date | null = null):void {
+        const today:Date = new Date();
+        let filtered: FilteredOperationsType[] = [];
         if (startDate && endDate) {
             // Фильтрация по диапазону
             filtered = this.allOperations.filter(operation => {
@@ -52,57 +69,77 @@ export class IncomeAndExpenses {
             });
         }
         this.filteredOperations = filtered;
-        this.showRecords(this.filteredOperations);
+        this.showRecords(this.filteredOperations as Operation[]);
     }
 
-    setDateFilterListeners() {
+    private setDateFilterListeners():void {
 
-        document.querySelector('#todayBtn').addEventListener('click', () => this.filterOperations());
+        const todayButton: HTMLElement | null = document.querySelector('#todayBtn');
+        if (todayButton) {
+        todayButton.addEventListener('click', () => this.filterOperations());
+        }
 
-        document.querySelector('#weekBtn').addEventListener('click', () => {
-            const today = new Date();
-            const weekAgo = new Date(today);
-            weekAgo.setDate(today.getDate() - 7);
-            this.filterOperations(weekAgo, today);
-        });
+        const weekButton: HTMLElement | null = document.querySelector('#weekBtn');
+        if (weekButton) {
+            weekButton.addEventListener('click', () => {
+                const today = new Date();
+                const weekAgo = new Date(today);
+                weekAgo.setDate(today.getDate() - 7);
+                this.filterOperations(weekAgo, today);
+            });
+        }
+       
+        const monthButton: HTMLElement | null = document.querySelector('#monthBtn');
+        if (monthButton) {
+            monthButton.addEventListener('click', () => {
+                const today = new Date();
+                const monthAgo = new Date(today);
+                monthAgo.setMonth(today.getMonth() - 1);
+                this.filterOperations(monthAgo, today);
+            });
+        }
+        
+        const yearButton: HTMLElement | null= document.querySelector('#yearBtn');
+        if (yearButton) {
+            yearButton.addEventListener('click', () => {
+                const today = new Date();
+                const yearAgo = new Date(today);
+                yearAgo.setFullYear(today.getFullYear() - 1);
+                this.filterOperations(yearAgo, today);
+            }); 
+        }
+        
+        const allButton: HTMLElement | null = document.querySelector('#allBtn');
+        if (allButton) {
+        allButton.addEventListener('click', () => this.showRecords(this.allOperations as Operation[]));
+        }
 
-        document.querySelector('#monthBtn').addEventListener('click', () => {
-            const today = new Date();
-            const monthAgo = new Date(today);
-            monthAgo.setMonth(today.getMonth() - 1);
-            this.filterOperations(monthAgo, today);
-        });
-
-        document.querySelector('#yearBtn').addEventListener('click', () => {
-            const today = new Date();
-            const yearAgo = new Date(today);
-            yearAgo.setFullYear(today.getFullYear() - 1);
-            this.filterOperations(yearAgo, today);
-        });
-
-        document.querySelector('#allBtn').addEventListener('click', () => this.showRecords(this.allOperations));
-
-        document.querySelector('#intervalBtn').addEventListener('click', () => {
-            const startDate = new Date(document.querySelector('#startDate').value);
-            const endDate = new Date(document.querySelector('#endDate').value);
-            if (startDate && endDate) {
-                this.filterOperations(startDate, endDate);
-            }
-        });
+        const intervalButton: HTMLElement | null = document.querySelector('#intervalBtn');
+        if (intervalButton) {
+            intervalButton.addEventListener('click', () => {
+                const startDate = new Date((document.querySelector('#startDate') as HTMLInputElement).value);
+                const endDate = new Date((document.querySelector('#endDate') as HTMLInputElement).value);
+                if (startDate && endDate) {
+                    this.filterOperations(startDate, endDate);
+                }
+            });
+        }
+        
     }
 
-    showRecords(operations) {
+    private showRecords(operations: Operation[]):void {
 
-        const recordsElement = document.getElementById('records');
-        recordsElement.innerHTML = '';
+        const recordsElement:HTMLElement | null = document.getElementById('records');
+        if (recordsElement) {
+            recordsElement.innerHTML = '';
 
-        let index = 1;
+        let index: number = 1;
         operations.forEach((operation) => {
 
-            const trElement = document.createElement('tr');
-            const formattedDate = new Date(operation.date).toLocaleDateString('ru-RU');
-            const typeClass = operation.type === 'income' ? 'table-type-income' : 'table-type-expenses';
-            const typeText = operation.type === 'income' ? 'доход' : 'расход';
+            const trElement:HTMLElement | null = document.createElement('tr');
+            const formattedDate: string = new Date(operation.date).toLocaleDateString('ru-RU');
+            const typeClass: string = operation.type === 'income' ? 'table-type-income' : 'table-type-expenses';
+            const typeText: string = operation.type === 'income' ? 'доход' : 'расход';
 
             trElement.innerHTML = `
             <th scope="row" class="text-center">${index}</th>
@@ -139,34 +176,36 @@ export class IncomeAndExpenses {
         });
 
         this.attachDeleteListeners();
+        }
+        
     }
 
-    attachDeleteListeners() {
-        const deleteButtons = document.querySelectorAll('.delete-table');
+    private attachDeleteListeners():void {
+        const deleteButtons: NodeListOf<Element> = document.querySelectorAll('.delete-table');
         if (deleteButtons.length === 0) {
             return;
         }
 
         deleteButtons.forEach(button => {
-            button.addEventListener('click', (event) => {
-                const operationId = event.currentTarget.getAttribute('data-operation-id');
-                this.operationToDelete = operationId;
-            });
+            button.addEventListener('click', (event:Event) => {
+            const target = event.currentTarget as HTMLElement; 
+            const operationId = target.getAttribute('data-operation-id');
+            if (target) {
+            this.operationToDelete = operationId;
+            }
+        });
         });
     }
 
-
-
-   async setModalListeners() {
-        const modalSuccessButton = document.querySelector('.btn-modal-success');
+   private async setModalListeners():Promise<void> {
+        const modalSuccessButton:HTMLElement | null = document.querySelector('.btn-modal-success');
 
         if (!modalSuccessButton) {
             return;
         }
-        document.querySelector('.btn-modal-success').addEventListener('click', async () => {
+        modalSuccessButton.addEventListener('click', async () => {
             if (this.operationToDelete) {
-                // Proceed with deletion
-                const result = await HttpUtils.request('/operations/' + this.operationToDelete, 'DELETE', true);
+                const result:any = await HttpUtils.request('/operations/' + this.operationToDelete, 'DELETE', true);
 
                 if (result.redirect) {
                     return this.openNewRoute(result.redirect);

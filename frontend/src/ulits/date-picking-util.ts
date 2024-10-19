@@ -1,13 +1,17 @@
 import AirDatepicker from "air-datepicker";
 import "air-datepicker/air-datepicker.css";
 import { HttpUtils } from "./http-utils";
-import { Main } from "../components/main";
-import es from "air-datepicker/locale/es";
+// import es from "air-datepicker/locale/es";
+import { OperationType } from "../types/operation.type";
 
 export class DatePickingUtil {
-    static datePicking(callback) {
+
+    private static id: string;
+    static classList: DOMTokenList;
+
+    public static datePicking(callback: ((startDate: any, endDate: any) => void) | undefined): void {
         document.querySelectorAll(".date-btn").forEach((button) => {
-            button.addEventListener("click", function () {
+            button.addEventListener("click",  () => {
                 document.querySelectorAll(".date-btn").forEach((btn) => {
                     btn.classList.remove("btn-secondary");
                     btn.classList.add("btn-outline-secondary");
@@ -16,17 +20,22 @@ export class DatePickingUtil {
                 this.classList.remove("btn-outline-secondary");
                 this.classList.add("btn-secondary");
 
-                if (this.id === "intervalBtn") {
-                    document.getElementById("dateRangeInputs").classList.remove("d-none");
-                    startDatePicker.clear();
-                    endDatePicker.clear();
-                } else {
-                    document.getElementById("dateRangeInputs").classList.add("d-none");
+                let dateRangeInputs:HTMLElement | null = document.getElementById('dateRangeInputs');
+
+                if (dateRangeInputs) {
+                    if (this.id === "intervalBtn") {
+                        dateRangeInputs.classList.remove("d-none");
+                        startDatePicker.clear();
+                        endDatePicker.clear();
+                    } else {
+                        dateRangeInputs.classList.add("d-none");
+                    }
                 }
+                
             });
         });
 
-        const startDatePicker = new AirDatepicker("#startDate", {
+        const startDatePicker: AirDatepicker<HTMLElement> = new AirDatepicker("#startDate", {
             buttons: "clear",
             autoClose: true,
             onSelect({ date }) {
@@ -39,7 +48,7 @@ export class DatePickingUtil {
             },
         });
 
-        const endDatePicker = new AirDatepicker("#endDate", {
+        const endDatePicker: AirDatepicker<HTMLElement> = new AirDatepicker("#endDate", {
             buttons: "clear",
             autoClose: true,
             maxDate: new Date(),
@@ -53,7 +62,7 @@ export class DatePickingUtil {
             },
         });
 
-        const pieChartStartDatePicker = new AirDatepicker("#startDatePicker", {
+        new AirDatepicker("#startDatePicker", {
             buttons: "clear",
             autoClose: true,
             onSelect({ date }) {
@@ -72,9 +81,9 @@ export class DatePickingUtil {
         });
     }
 
-    static async filterOperationsByDateRange(callback) {
-        const startDateInput = document.getElementById("startDate").value;
-        const endDateInput = document.getElementById("endDate").value;
+    public static async filterOperationsByDateRange(callback: ((startDate: any, endDate: any) => void ) | undefined): Promise<void> {
+        const startDateInput: string | null = (document.getElementById('startDate') as HTMLInputElement ).value;
+        const endDateInput: string | null = (document.getElementById('startDate') as HTMLInputElement ).value;
 
         // Если хотя бы одна дата выбрана, отправляем запрос
         if (startDateInput && endDateInput) {
@@ -82,7 +91,7 @@ export class DatePickingUtil {
             const endDate = this.convertToBackendFormat(endDateInput);
 
             if (document.getElementById("records")) {
-                const result = await HttpUtils.request(
+                const result:any = await HttpUtils.request(
                     `/operations?period=interval&dateFrom=${startDate}&dateTo=${endDate}`
                 );
                 if (result.error || !result.response) {
@@ -90,28 +99,28 @@ export class DatePickingUtil {
                     return;
                 }
                 this.updateOperationsTable(result.response);
-            } else {
+            } else if (callback) {
                 callback(startDate, endDate);
             }
         }
     }
 
-    static updateOperationsTable(operations) {
-        const recordsElement = document.getElementById("records");
+    private static updateOperationsTable(operations: OperationType[]):void {
+        const recordsElement: HTMLElement | null = document.getElementById("records");
         if (recordsElement) {
             recordsElement.innerHTML = "";
 
-            let index = 1;
+            let index: number = 1;
             operations.forEach((operation) => {
-                const trElement = document.createElement("tr");
-                const formattedDate = new Date(operation.date).toLocaleDateString(
+                const trElement: HTMLElement | null = document.createElement("tr");
+                const formattedDate: string  = new Date(operation.date).toLocaleDateString(
                     "ru-RU"
                 );
-                const typeClass =
+                const typeClass: string =
                     operation.type === "income"
                         ? "table-type-income"
                         : "table-type-expenses";
-                const typeText = operation.type === "income" ? "доход" : "расход";
+                const typeText: string = operation.type === "income" ? "доход" : "расход";
 
                 trElement.innerHTML = `
             <th scope="row" class="text-center">${index}</th>
@@ -151,7 +160,7 @@ export class DatePickingUtil {
         }
     }
 
-    static convertToBackendFormat(dateStr) {
+    private static convertToBackendFormat(dateStr:string):string {
         const [day, month, year] = dateStr.split(".");
         return `${year}-${month}-${day}`;
     }
