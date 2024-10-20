@@ -1,8 +1,6 @@
 import {DatePickingUtil} from "../../ulits/date-picking-util";
 import {HttpUtils} from "../../ulits/http-utils";
 import { FilteredOperationsType } from "../../types/filtered-operations.type";
-import { callback } from "chart.js/dist/helpers/helpers.core";
-
 
 
 interface Operation {
@@ -29,7 +27,7 @@ export class IncomeAndExpenses {
 
         this.setDateFilterListeners(); // Устанавливаем обработчики для фильтров даты
 
-        DatePickingUtil.datePicking(callback);
+        DatePickingUtil.datePicking(() => {});
         this.getOperations();
         this.filterOperations();
         this.setModalListeners();

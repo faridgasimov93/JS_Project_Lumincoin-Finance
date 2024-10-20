@@ -1,4 +1,3 @@
-import { callback } from "chart.js/dist/helpers/helpers.core";
 import {DatePickingUtil} from "../../ulits/date-picking-util";
 import {HttpUtils} from "../../ulits/http-utils";
 
@@ -25,7 +24,7 @@ export class IncomeAndExpensesCreate {
     constructor(openNewRoute: (url: string)=> Promise<void>) {
         this.openNewRoute = openNewRoute;
 
-        DatePickingUtil.datePicking(callback);
+        DatePickingUtil.datePicking(() => {});
 
         this.incomeExpenseSelector = document.getElementById('operationSelector');
 

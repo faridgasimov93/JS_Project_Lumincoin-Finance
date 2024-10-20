@@ -1,7 +1,6 @@
 import AirDatepicker from "air-datepicker";
 import "air-datepicker/air-datepicker.css";
 import { HttpUtils } from "./http-utils";
-// import es from "air-datepicker/locale/es";
 import { OperationType } from "../types/operation.type";
 
 export class DatePickingUtil {
@@ -11,19 +10,21 @@ export class DatePickingUtil {
 
     public static datePicking(callback: ((startDate: any, endDate: any) => void) | undefined): void {
         document.querySelectorAll(".date-btn").forEach((button) => {
-            button.addEventListener("click",  () => {
+            button.addEventListener("click",  function (event: Event) {
                 document.querySelectorAll(".date-btn").forEach((btn) => {
                     btn.classList.remove("btn-secondary");
                     btn.classList.add("btn-outline-secondary");
                 });
 
-                this.classList.remove("btn-outline-secondary");
-                this.classList.add("btn-secondary");
+                const clickedButton = event.currentTarget as HTMLElement;
+
+                clickedButton.classList.remove("btn-outline-secondary");
+                clickedButton.classList.add("btn-secondary");
 
                 let dateRangeInputs:HTMLElement | null = document.getElementById('dateRangeInputs');
 
                 if (dateRangeInputs) {
-                    if (this.id === "intervalBtn") {
+                    if (clickedButton.id === "intervalBtn") {
                         dateRangeInputs.classList.remove("d-none");
                         startDatePicker.clear();
                         endDatePicker.clear();
