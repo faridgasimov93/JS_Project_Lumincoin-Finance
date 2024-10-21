@@ -1,18 +1,29 @@
+import { RequestResultType } from "../../types/request-result.type";
 import {HttpUtils} from "../../ulits/http-utils";
-import bootstrap from "bootstrap";
+import * as bootstrap from "bootstrap";
 
 export class Income {
 
     private openNewRoute: (url: string) => Promise<void>;
     private selectedIncomeId: string | null;
     private selectedIncomeTitle: string | null;
-    declare bootstrap: any;
-
+    private modalInstance: any;
+    
     constructor(openNewRoute: (url: string)=> Promise<void>) {
 
         this.openNewRoute = openNewRoute;
         this.selectedIncomeId = null;
         this.selectedIncomeTitle = null;
+
+        const deleteModalElement: HTMLElement | null = document.getElementById('deleteModal');
+        if (deleteModalElement) {
+            this.modalInstance = new bootstrap.Modal(deleteModalElement);
+
+            // Добавляем обработчик, чтобы убрать фоновый слой при закрытии
+            deleteModalElement.addEventListener('hidden.bs.modal', () => {
+                document.querySelectorAll('.modal-backdrop').forEach(backdrop => backdrop.remove());
+            });
+        }
 
         this.getIncomes();
         const deleteButton: HTMLElement | null = document.getElementById('deleteButton')
@@ -22,7 +33,7 @@ export class Income {
     }
 
     private async getIncomes(): Promise<void> {
-        const result:any = await HttpUtils.request('/categories/income');
+        const result:RequestResultType = await HttpUtils.request('/categories/income');
         if (result.redirect) {
             return this.openNewRoute(result.redirect);
         }
@@ -79,6 +90,9 @@ export class Income {
         if (modalTitleElement && this.selectedIncomeTitle) {
             modalTitleElement.innerText = `Вы действительно хотите удалить категорию "${this.selectedIncomeTitle}"?`;
         }
+        if (this.modalInstance) {
+            this.modalInstance.show();
+        }
     }
 
    private async deleteIncome():Promise<void> {
@@ -97,14 +111,10 @@ export class Income {
             if (incomeBlock) {
                 incomeBlock.remove();
             }
-
-            const deleteModal:HTMLElement | null = document.getElementById('deleteModal');
-            if (deleteModal) {
-                 const modalInstance: bootstrap.Modal | null = bootstrap.Modal.getInstance(deleteModal);
-                if (modalInstance) {
-                  modalInstance.hide();
+                if (this.modalInstance) {
+                  this.modalInstance.hide();
                 }
-            }
+            
             this.openNewRoute('/income');
 
         }

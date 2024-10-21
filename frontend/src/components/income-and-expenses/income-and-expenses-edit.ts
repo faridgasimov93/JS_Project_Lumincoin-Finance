@@ -1,4 +1,5 @@
 
+import { RequestResultType } from "../../types/request-result.type";
 import {DatePickingUtil} from "../../ulits/date-picking-util";
 import {HttpUtils} from "../../ulits/http-utils";
 
@@ -64,7 +65,7 @@ export class IncomeAndExpensesEdit {
     }
 
     private async getOperation(id:string): Promise<void> {
-        const result:any = await HttpUtils.request('/operations/' + id);
+        const result: RequestResultType = await HttpUtils.request('/operations/' + id);
         // console.log(result);
         if (result.redirect) {
             return this.openNewRoute(result.redirect);
@@ -93,7 +94,7 @@ export class IncomeAndExpensesEdit {
         // В зависимости от выбранного значения, выбираются категории
         let url:string = selectedValue === "1" ? '/categories/income' : '/categories/expense';
 
-        const result:{ response: Category[]; error?: string } = await HttpUtils.request(url);
+        const result: RequestResultType = await HttpUtils.request(url);
         if (result.error || !result.response) {
             alert("Ошибка загрузки категорий!");
             return;
@@ -102,7 +103,9 @@ export class IncomeAndExpensesEdit {
             this.operationCategorySelect.innerHTML = '<option value="">Выберите категорию</option>';
         this.categoriesMap = {};
 
-        result.response.forEach(item => {
+        const categories: Category[] = result.response;
+
+        categories.forEach(item => {
             const option:HTMLElement | null = document.createElement('option');
 
             (option as HTMLInputElement).value = item.title;
@@ -184,7 +187,7 @@ export class IncomeAndExpensesEdit {
             const categoryId: number | null = this.categoriesMap[categoryTitle];
             const operationAmount: number | null = parseFloat((this.operationAmountInput as HTMLInputElement).value);
 
-            const result:any = await HttpUtils.request('/operations/' + this.id, 'PUT', true,{
+            const result: RequestResultType = await HttpUtils.request('/operations/' + this.id, 'PUT', true,{
                 type: operationType,
                 amount: operationAmount,
                 date: formattedDate,

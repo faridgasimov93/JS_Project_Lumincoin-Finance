@@ -2,13 +2,14 @@ import AirDatepicker from "air-datepicker";
 import "air-datepicker/air-datepicker.css";
 import { HttpUtils } from "./http-utils";
 import { OperationType } from "../types/operation.type";
+import { RequestResultType } from "../types/request-result.type";
 
 export class DatePickingUtil {
 
     private static id: string;
     static classList: DOMTokenList;
 
-    public static datePicking(callback: ((startDate: any, endDate: any) => void) | undefined): void {
+    public static datePicking(callback: ((startDate:number | string , endDate:number | string ) => void) | undefined): void {
         document.querySelectorAll(".date-btn").forEach((button) => {
             button.addEventListener("click",  function (event: Event) {
                 document.querySelectorAll(".date-btn").forEach((btn) => {
@@ -82,9 +83,9 @@ export class DatePickingUtil {
         });
     }
 
-    public static async filterOperationsByDateRange(callback: ((startDate: any, endDate: any) => void ) | undefined): Promise<void> {
+    public static async filterOperationsByDateRange(callback: ((startDate: string, endDate: string) => void ) | undefined): Promise<void> {
         const startDateInput: string | null = (document.getElementById('startDate') as HTMLInputElement ).value;
-        const endDateInput: string | null = (document.getElementById('startDate') as HTMLInputElement ).value;
+        const endDateInput: string | null = (document.getElementById('endDate') as HTMLInputElement ).value;
 
         // Если хотя бы одна дата выбрана, отправляем запрос
         if (startDateInput && endDateInput) {
@@ -92,7 +93,7 @@ export class DatePickingUtil {
             const endDate = this.convertToBackendFormat(endDateInput);
 
             if (document.getElementById("records")) {
-                const result:any = await HttpUtils.request(
+                const result: RequestResultType = await HttpUtils.request(
                     `/operations?period=interval&dateFrom=${startDate}&dateTo=${endDate}`
                 );
                 if (result.error || !result.response) {

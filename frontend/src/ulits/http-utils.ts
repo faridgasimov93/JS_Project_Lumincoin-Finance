@@ -3,19 +3,24 @@ import { RequestResultType } from "../types/request-result.type";
 import {AuthUtils} from "./auth-utils";
 
 export class HttpUtils {
-     public static async request(url:string, method:string = 'GET', useAuth:boolean = true, body:any | null = null):Promise<any> {
+     public static async request(
+        url:string,
+         method:string = 'GET',
+          useAuth:boolean = true,
+           body: object | string | null = null
+        ):Promise<RequestResultType> {
 
         const result: RequestResultType = {
             error: false,
             response: null
         };
 
-        const params:any = {
+        const params: RequestInit  = {
             method: method,
             headers: {
                 'Content-type': 'application/json',
                 'Accept': 'application/json',
-            },
+            } as { [key: string]: string },
         }
 
         let tokenData = AuthUtils.getAuthInfo(AuthUtils.accessTokenKey);
@@ -28,7 +33,7 @@ export class HttpUtils {
         }
 
         if (useAuth && token) {
-            (params.headers['x-auth-token']) = token;
+            (params.headers as { [key: string]: string }) ['x-auth-token'] = token;
         }
 
         if (body) {

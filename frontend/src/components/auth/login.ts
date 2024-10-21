@@ -1,5 +1,6 @@
 import {HttpUtils} from "../../ulits/http-utils";
 import {AuthUtils} from "../../ulits/auth-utils";
+import { RequestResultType } from "../../types/request-result.type";
 
 export class Login {
 
@@ -65,7 +66,7 @@ export class Login {
         }
 
         if (this.validateForm()) {
-            const result:any = await HttpUtils.request('/login', 'POST', false, {
+            const result:RequestResultType = await HttpUtils.request('/login', 'POST', false, {
                 email: (this.emailInputElement as HTMLInputElement).value,
                 password: (this.passwordInputElement as HTMLInputElement).value,
                 rememberMe: (this.rememberMeElement as HTMLInputElement).checked

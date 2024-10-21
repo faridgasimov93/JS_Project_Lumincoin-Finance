@@ -1,6 +1,7 @@
 import {DatePickingUtil} from "../../ulits/date-picking-util";
 import {HttpUtils} from "../../ulits/http-utils";
 import { FilteredOperationsType } from "../../types/filtered-operations.type";
+import { RequestResultType } from "../../types/request-result.type";
 
 
 interface Operation {
@@ -34,7 +35,7 @@ export class IncomeAndExpenses {
     }
 
     private async getOperations(): Promise<void> {
-        const result:any = await HttpUtils.request('/operations?period=all');
+        const result:RequestResultType = await HttpUtils.request('/operations?period=all');
         // console.log(result.response);
 
         if (result.redirect) {

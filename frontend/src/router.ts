@@ -201,8 +201,7 @@ export class Router {
                     }
                 }
             },
-        ];
-
+        ]
     }
 
     private initEvents():void {
@@ -220,14 +219,17 @@ export class Router {
         await this.activateRoute();
     }
 
-    private async clickHandler(event:any): Promise<void> {
-        let element:HTMLAnchorElement | null = null;
+    private async clickHandler(event:Event): Promise<void> {
+        let element: HTMLAnchorElement | null = null;
 
-        if (event.target.nodeName === 'A') {
-            element = event.target as HTMLAnchorElement;
-        } else if (event.target.parentNode.nodeName === 'A') {
-            element = event.target.parentNode as HTMLAnchorElement;
+        if (event.target instanceof HTMLElement) {
+            if (event.target.nodeName === 'A') {
+                element = event.target as HTMLAnchorElement;
+            } else if (event.target.parentNode instanceof HTMLElement && event.target.parentNode.nodeName === 'A') {
+                element = event.target.parentNode as HTMLAnchorElement;
+            } 
         }
+        
         if (element) {
             event.preventDefault();
 
@@ -275,7 +277,7 @@ export class Router {
         }
         const menuToggle: HTMLElement | null = document.getElementById('menu-toggle');
         if (menuToggle) {
-            menuToggle.addEventListener('click', function () {
+            menuToggle.addEventListener('click', () => {
                 const sidebar = document.querySelector('.custom-sidebar');
                 const menuButton = document.querySelector('.menu-toggle');
                 if (sidebar) {

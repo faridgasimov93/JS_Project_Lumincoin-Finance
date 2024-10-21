@@ -1,18 +1,29 @@
+import { RequestResultType } from "../../types/request-result.type";
 import {HttpUtils} from "../../ulits/http-utils";
 import * as bootstrap from 'bootstrap';
+
 
 export class Expenses {
 
     private openNewRoute: (url: string) => Promise<void>;
     private selectedExpenseId: string | null;
     private selectedExpenseTitle: string | null;
-    declare bootstrap: any;
+    private modalInstance: any;
 
     constructor(openNewRoute: (url: string) => Promise<void>) {
 
         this.openNewRoute = openNewRoute;
         this.selectedExpenseId = null;
         this.selectedExpenseTitle = null;
+
+        const deleteModalElement: HTMLElement | null = document.getElementById('deleteModal');
+        if (deleteModalElement) {
+            this.modalInstance = new bootstrap.Modal(deleteModalElement);
+            deleteModalElement.addEventListener('hidden.bs.modal', () => {
+                document.querySelectorAll('.modal-backdrop').forEach(backdrop => backdrop.remove());
+            });
+        }
+        
 
         this.getExpenses();
         const deleteButton: HTMLElement | null = document.getElementById('deleteButton')
@@ -23,7 +34,7 @@ export class Expenses {
     }
 
     private async getExpenses():Promise<void> {
-        const result: any = await HttpUtils.request('/categories/expense');
+        const result: RequestResultType = await HttpUtils.request('/categories/expense');
         if (result.redirect) {
             return this.openNewRoute(result.redirect);
         }
@@ -85,11 +96,16 @@ export class Expenses {
         if (modalTitleElement && this.selectedExpenseTitle) {
             modalTitleElement.innerText = `Вы действительно хотите удалить категорию "${this.selectedExpenseTitle}"?`;
         }
+        if (this.modalInstance) {
+            this.modalInstance.show();
+        }
     }
+    
 
     private async deleteExpense(): Promise<void> {
+        
         if (this.selectedExpenseId) {
-            const result:any = await HttpUtils.request('/categories/expense/' + this.selectedExpenseId, 'DELETE', true);
+            const result:RequestResultType = await HttpUtils.request('/categories/expense/' + this.selectedExpenseId, 'DELETE', true);
 
             if (result.redirect) {
                 return this.openNewRoute(result.redirect);
@@ -103,15 +119,10 @@ export class Expenses {
             if (expenseBlock) {
                 expenseBlock.remove();
             }
-            const deleteModal:HTMLElement | null = document.getElementById('deleteModal');
-            if (deleteModal) {
-                const modalInstance = bootstrap.Modal.getInstance(deleteModal);
-                if (modalInstance) {
-                    modalInstance.hide();
-                }
+            if (this.modalInstance) {
+                this.modalInstance.hide();
             }
             
-
             this.openNewRoute('/expenses');
         }
     }

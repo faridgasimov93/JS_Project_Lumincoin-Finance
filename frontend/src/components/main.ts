@@ -1,6 +1,7 @@
 import Chart from "chart.js/auto";
 import { DatePickingUtil } from "../ulits/date-picking-util";
 import { HttpUtils } from "../ulits/http-utils";
+import { RequestResultType } from "../types/request-result.type";
 
 interface Operation {
     id: number;
@@ -13,6 +14,33 @@ interface Operation {
 interface Operations {
     category: string;
     amount: number;
+}
+
+interface ChartData {
+        labels: string[];
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: boolean;
+                };
+            };
+        };
+        datasets: {
+            label: string;
+            data: number[];
+            backgroundColor: string[];
+            hoverOffset: number;
+        }[];
+}
+
+interface legendMargin {
+        id: string;
+        beforeInit(chart: {
+            legend: {
+                height: number;
+                fit: () => void;
+            };
+        }): void;
 }
 
 export class Main {
@@ -41,7 +69,9 @@ export class Main {
         this.setDateFilterListeners();
 
         DatePickingUtil.datePicking(( startDate, endDate,) => {
-            this.getOperations(startDate, endDate,);
+            const startDateObj = typeof startDate === 'string' ? new Date(startDate) : undefined;
+            const endDateObj = typeof endDate === 'string' ? new Date(endDate) : undefined;
+            this.getOperations(startDateObj, endDateObj,);
         });
 
         const today: Date = new Date();
@@ -49,10 +79,24 @@ export class Main {
 
     }
 
-    private async getOperations(startDate?: Date, endDate?: Date, customUrl: string | null = null):Promise<void> {
-        const result:any = await HttpUtils.request(
+    private formatDate(date: Date | string): string {
+    if (typeof date === "string") {
+        return date;
+    }
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+    private async getOperations(startDate?: Date | string, endDate?: Date | string, customUrl: string | null = null):Promise<void> {
+
+        const formattedStartDate = startDate ? this.formatDate(startDate) : undefined;
+        const formattedEndDate = endDate ? this.formatDate(endDate) : undefined;
+        
+        const result: RequestResultType = await HttpUtils.request(
             customUrl ??
-            `/operations?period=interval&dateFrom=${startDate}&dateTo=${endDate}`
+            `/operations?period=interval&dateFrom=${formattedStartDate}&dateTo=${formattedEndDate}`
         );
 
         if (result.error) {
@@ -104,9 +148,9 @@ export class Main {
         const incomeData:number[] = Object.values(incomeByCategory);
         const backgroundColors:string[] = this.generateColors(incomeLabels);
 
-        const legendMargin = {
+        const legendMargin: legendMargin = {
             id: "legendMargin",
-            beforeInit(chart: { legend: { height: number; fit: () => any; }; }) {
+            beforeInit(chart: { legend: { height: number; fit: () => void; }; }) {
                 const fitValue = chart.legend.fit;
                 chart.legend.fit = function fit() {
                     fitValue.bind(chart.legend)();
@@ -115,7 +159,7 @@ export class Main {
             },
         };
 
-        const data:any = {
+        const data: ChartData = {
             labels: incomeLabels,
             options: {
                 scales: {
@@ -171,9 +215,9 @@ export class Main {
 
         const backgroundColors:string[] = this.generateColors(expenseLabels);
 
-        const legendMargin:any = {
+        const legendMargin: legendMargin = {
             id: "legendMargin",
-            beforeInit(chart: { legend: { height: number; fit: () => any; }; }) {
+            beforeInit(chart: { legend: { height: number; fit: () => void; }; }) {
                 // console.log(chart.legend.fit);
                 const fitValue = chart.legend.fit;
                 chart.legend.fit = function fit() {
@@ -183,7 +227,7 @@ export class Main {
             },
         };
 
-        const data:any = {
+        const data: ChartData = {
             labels: expenseLabels,
             options: {
                 scales: {

@@ -1,3 +1,4 @@
+import { RequestResultType } from "../../types/request-result.type";
 import {HttpUtils} from "../../ulits/http-utils";
 
 export class IncomeCreate {
@@ -35,7 +36,7 @@ export class IncomeCreate {
         e.preventDefault();
 
         if (this.validateForm()) {
-            const result = await HttpUtils.request('/categories/income', 'POST', true,{
+            const result: RequestResultType = await HttpUtils.request('/categories/income', 'POST', true,{
                 title: (this.createIncomeElement as HTMLInputElement).value
             });
             if (result.redirect) {

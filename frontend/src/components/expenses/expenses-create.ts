@@ -1,3 +1,4 @@
+import { RequestResultType } from "../../types/request-result.type";
 import {HttpUtils} from "../../ulits/http-utils";
 
 export class ExpensesCreate {
@@ -35,7 +36,7 @@ export class ExpensesCreate {
         e.preventDefault();
 
         if (this.validateForm()) {
-            const result:any = await HttpUtils.request('/categories/expense', 'POST', true, {
+            const result:RequestResultType = await HttpUtils.request('/categories/expense', 'POST', true, {
                 title:  (this.createExpenseElement as HTMLInputElement).value
             });
             if (result.redirect) {

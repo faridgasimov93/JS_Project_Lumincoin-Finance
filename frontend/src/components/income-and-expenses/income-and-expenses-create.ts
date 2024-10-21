@@ -1,3 +1,4 @@
+import { RequestResultType } from "../../types/request-result.type";
 import {DatePickingUtil} from "../../ulits/date-picking-util";
 import {HttpUtils} from "../../ulits/http-utils";
 
@@ -66,7 +67,7 @@ export class IncomeAndExpensesCreate {
         // В зависимости от выбранного значения, выбираются категории
         let url:string = selectedValue === "1" ? '/categories/income' : '/categories/expense';
 
-        const result: { response: Category[]; error?: string } = await HttpUtils.request(url);
+        const result: RequestResultType = await HttpUtils.request(url);
         if (result.error || !result.response) {
             alert("Ошибка загрузки категорий!");
             return;
@@ -75,7 +76,9 @@ export class IncomeAndExpensesCreate {
         this.operationCategorySelect.innerHTML = '<option value="">Выберите категорию</option>';
         this.categoriesMap = {};
 
-        result.response.forEach(item => {
+        const categories: Category[] = result.response;
+
+        categories.forEach(item => {
             const option:HTMLElement | null = document.createElement('option');
 
             (option as HTMLInputElement).value = item.title; // сохраняет названия категорий
@@ -159,7 +162,7 @@ export class IncomeAndExpensesCreate {
             const categoryTitle: string | null = (this.operationCategorySelect as HTMLSelectElement).value;
             const categoryId: number | null = this.categoriesMap[categoryTitle]; // Сохраняет ID выбранной категории
 
-            const result:any = await HttpUtils.request('/operations', 'POST', true,{
+            const result:RequestResultType = await HttpUtils.request('/operations', 'POST', true,{
                 type: operationType,
                 amount: (this.operationAmountInput as HTMLInputElement).value,
                 date: formattedDate,

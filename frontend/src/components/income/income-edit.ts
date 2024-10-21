@@ -1,3 +1,4 @@
+import { RequestResultType } from "../../types/request-result.type";
 import {HttpUtils} from "../../ulits/http-utils";
 
 export class IncomeEdit {
@@ -34,7 +35,7 @@ export class IncomeEdit {
     }
 
     private async getIncome(id:string):Promise<void> {
-        const result:any = await HttpUtils.request('/categories/income/' + id);
+        const result:RequestResultType = await HttpUtils.request('/categories/income/' + id);
         if (result.redirect) {
             return this.openNewRoute(result.redirect);
         }
